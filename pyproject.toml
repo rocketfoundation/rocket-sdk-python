@@ -1,20 +1,26 @@
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+requires = ["hatchling"]
 
 [project]
-name = "rocket_sdk_python"
-version = "0.1.0"
+dependencies = [
+    "eth-account>=0.13.7",
+    "eth-keys>=0.7.0",
+    "httpx>=0.28.1",
+    "msgpack>=1.1.2",
+    "pydantic>=2.12.5",
+]
 description = "Python SDK for Rocket Chain"
+name = "rocket_sdk_python"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+version = "0.1.0"
 
 [project.optional-dependencies]
 dev = [
-    "ruff",
-    "mypy",
-    "pytest",
+  "ruff",
+  "mypy",
+  "pytest",
 ]
 
 [tool.ruff]
@@ -25,6 +31,10 @@ target-version = "py312"
 python_version = "3.12"
 strict = true
 
-
 [tool.hatch.build.targets.wheel]
 packages = ["src/rocket_sdk_python"]
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=1.3.0",
+]
