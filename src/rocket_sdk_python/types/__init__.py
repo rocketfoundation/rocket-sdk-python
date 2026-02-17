@@ -1,9 +1,11 @@
-from rocket_sdk_python.types import (
+from rocket_sdk_python.types.base import (
     AccountAddress,
     AssetId,
     GlobalOrderId,
     InstrumentId,
     Signature,
+)
+from rocket_sdk_python.types.orders import (
     OrderSide,
     PlaceLimitOrderRequest,
     PlaceMarketOrderRequest,
@@ -17,6 +19,8 @@ from rocket_sdk_python.types import (
     ModifyOrder,
     OrderRequest,
     OrderRequestSet,
+)
+from rocket_sdk_python.types.transactions import (
     SerializationFormat,
     SignatureScheme,
     WithdrawData,
