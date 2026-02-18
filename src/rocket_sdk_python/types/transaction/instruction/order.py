@@ -1,14 +1,13 @@
-from enum import Enum
 from typing import Annotated, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from rocket_sdk_python.types.base import AccountAddress, GlobalOrderId, InstrumentId
-
-
-class OrderSide(str, Enum):
-    BUY = "Buy"
-    SELL = "Sell"
+from rocket_sdk_python.types.primitives import (
+    AccountAddress,
+    GlobalOrderId,
+    InstrumentId,
+    OrderSide,
+)
 
 
 class PlaceLimitOrderRequest(BaseModel):
@@ -97,3 +96,8 @@ OrderRequest = Annotated[
 ]
 
 OrderRequestSet = list[OrderRequest]
+
+
+class PlaceOrderInstruction(BaseModel):
+    PlaceOrder: OrderRequestSet
+
