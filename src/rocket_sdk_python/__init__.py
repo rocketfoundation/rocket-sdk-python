@@ -1,3 +1,11 @@
+from rocket_sdk_python.crypto import (
+    AccountSigner,
+    ROCKET_CHAIN_DOMAIN,
+    eip191_hash,
+    eip712_signing_hash,
+    sign_eip191,
+    sign_eip712,
+)
 from rocket_sdk_python.types.primitives import (
     AccountAddress,
     AssetId,
@@ -39,6 +47,7 @@ from rocket_sdk_python.types.transaction import (
 
 __all__ = [
     "AccountAddress",
+    "AccountSigner",
     "AssetId",
     "CancelAllOrder",
     "CancelAllOrderRequest",
@@ -59,6 +68,7 @@ __all__ = [
     "PlaceMarketOrderRequest",
     "PlaceOrderInstruction",
     "RawTransaction",
+    "ROCKET_CHAIN_DOMAIN",
     "SerializationFormat",
     "SetLeverageData",
     "SetLeverageInstruction",
@@ -72,4 +82,8 @@ __all__ = [
     "VaultWithdrawInstruction",
     "WithdrawData",
     "WithdrawInstruction",
+    "eip191_hash",
+    "eip712_signing_hash",
+    "sign_eip191",
+    "sign_eip712",
 ]
