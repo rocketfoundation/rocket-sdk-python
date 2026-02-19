@@ -19,3 +19,27 @@ BlockTimestamp = int
 Shares = int
 
 Round = int
+
+OrderIx = int
+
+AssetTicker = str
+
+HaircutTick = int
+
+PriceScale = int
+
+PriceTick = int
+
+QuantityScale = int
+
+QuantityTick = int
+
+FeeRate = int
+
+TradedVolume = int
+
+ScenarioChange = int
+
+InstrumentFlags = int
+
+PnLTick = int
