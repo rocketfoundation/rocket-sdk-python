@@ -14,3 +14,8 @@ AssetId = int
 
 GlobalOrderId = int
 
+BlockTimestamp = int
+
+Shares = int
+
+Round = int
