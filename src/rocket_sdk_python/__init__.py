@@ -1,3 +1,4 @@
+from rocket_sdk_python.client import RestClient
 from rocket_sdk_python.crypto import (
     AccountSigner,
     ROCKET_CHAIN_DOMAIN,
@@ -63,6 +64,7 @@ from rocket_sdk_python.types.transaction import (
 __all__ = [
     "AccountAddress",
     "AccountSigner",
+    "RestClient",
     "AssetId",
     "CancelAllOrder",
     "CancelAllOrderRequest",
