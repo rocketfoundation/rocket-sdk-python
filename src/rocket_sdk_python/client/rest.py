@@ -74,9 +74,75 @@ class RestClient:
         response.raise_for_status()
         return response.json()
 
+    def _transform_rust_enum(self, obj, parent_key=None):
+        """Transform Rust-style enum serialization to discriminated union format.
+
+        Converts {"VariantName": {...}} to {"type": "VariantName", ...}
+        Only transforms single-key dicts where the key looks like a variant name (capitalized).
+        """
+        if isinstance(obj, dict):
+            # Check if this is a single-key dict with a capitalized key (Rust enum variant)
+            if len(obj) == 1:
+                key = next(iter(obj.keys()))
+                # Only transform if the key starts with uppercase (variant name pattern)
+                # and is not a known field name like 'results', 'instruments', etc.
+                if key[0].isupper() and key not in ['PlaceOrder', 'CreateVault', 'VaultDeposit', 'VaultWithdraw', 'SetLeverage', 'Withdraw']:
+                    value = obj[key]
+                    transformed_value = self._transform_rust_enum(value, parent_key=key)
+
+                    # Special case: Success/Err variants should have their content under 'event'/'message'
+                    if key == "Success":
+                        return {"type": key, "event": transformed_value}
+                    elif key == "Err":
+                        # Err might have a message field or be a simple string
+                        if isinstance(transformed_value, dict):
+                            return {"type": key, **transformed_value}
+                        else:
+                            return {"type": key, "message": transformed_value}
+                    # For event data variants (placed, canceled, etc.), merge the fields
+                    elif key.lower() in ["placed", "canceled", "modified", "fill", "rejected"]:
+                        if isinstance(transformed_value, dict):
+                            return {"type": key.capitalize(), **transformed_value}
+                        else:
+                            return {"type": key.capitalize(), "value": transformed_value}
+                    # Default: merge fields
+                    elif isinstance(transformed_value, dict):
+                        return {"type": key, **transformed_value}
+                    else:
+                        return {"type": key, "value": transformed_value}
+
+            # Recursively transform nested objects
+            return {k: self._transform_rust_enum(v, parent_key=k) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._transform_rust_enum(item, parent_key=parent_key) for item in obj]
+        else:
+            return obj
+
     def submit_transaction(self, tx: Transaction) -> TransactionResponse:
         body = tx.model_dump(by_alias=True, mode="json")
         data = self._post("/transaction", body)
+
+        # Transform Rust-style enum serialization
+        data = self._transform_rust_enum(data)
+
+        # API doesn't return a 'type' field at the top level, infer it from the instruction
+        instruction = tx.data.instruction
+        if hasattr(instruction, 'PlaceOrder'):
+            data['type'] = 'PlaceOrder'
+        elif hasattr(instruction, 'Withdraw'):
+            data['type'] = 'Ok'  # Withdraw returns Ok response
+        elif hasattr(instruction, 'CreateVault'):
+            data['type'] = 'CreateVault'
+        elif hasattr(instruction, 'VaultDeposit'):
+            data['type'] = 'VaultDeposit'
+        elif hasattr(instruction, 'VaultWithdraw'):
+            data['type'] = 'VaultWithdraw'
+        elif hasattr(instruction, 'SetLeverage'):
+            data['type'] = 'Ok'  # SetLeverage returns Ok response
+        else:
+            # Default to Ok if we can't determine the type
+            data['type'] = 'Ok'
+
         return _tx_response_adapter.validate_python(data)
 
     def submit_transactions_batch(self, txs: list[Transaction]) -> str:

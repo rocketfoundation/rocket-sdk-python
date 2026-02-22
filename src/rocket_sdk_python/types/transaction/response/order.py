@@ -1,6 +1,6 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 from rocket_sdk_python.types.primitives.aliases import (
     AssetId,
@@ -18,10 +18,9 @@ from rocket_sdk_python.types.primitives.account_address import AccountAddress
 from rocket_sdk_python.types.views.order_event import RejectionReason
 
 
-class OrderEventFillData(BaseModel):
+class OrderEventFillFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Fill"] = "Fill"
     price: PriceTick
     size: QuantityTick
     price_scale: PriceScale = Field(alias="priceScale")
@@ -39,10 +38,9 @@ class OrderEventFillData(BaseModel):
     is_liquidation: bool = Field(alias="isLiquidation")
 
 
-class OrderEventPlacedData(BaseModel):
+class OrderEventPlacedFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Placed"] = "Placed"
     price: PriceTick
     size: QuantityTick
     price_scale: PriceScale = Field(alias="priceScale")
@@ -54,16 +52,9 @@ class OrderEventPlacedData(BaseModel):
     order_quantity: QuantityTick = Field(alias="orderQuantity")
 
 
-class OrderEventCanceledData(BaseModel):
+class OrderEventModifiedFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Canceled"] = "Canceled"
-
-
-class OrderEventModifiedData(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
-    type: Literal["Modified"] = "Modified"
     price: PriceTick
     size: QuantityTick
     price_scale: PriceScale = Field(alias="priceScale")
@@ -71,21 +62,39 @@ class OrderEventModifiedData(BaseModel):
     timestamp: BlockTimestamp
 
 
-class OrderEventRejectedData(BaseModel):
+class OrderEventRejectedFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Rejected"] = "Rejected"
     reason: RejectionReason
 
 
-OrderEventData = Annotated[
+class OrderEventFillData(BaseModel):
+    fill: OrderEventFillFields
+
+
+class OrderEventPlacedData(BaseModel):
+    placed: OrderEventPlacedFields
+
+
+class OrderEventCanceledData(RootModel):
+    root: Literal["canceled"]
+
+
+class OrderEventModifiedData(BaseModel):
+    modified: OrderEventModifiedFields
+
+
+class OrderEventRejectedData(BaseModel):
+    rejected: OrderEventRejectedFields
+
+
+OrderEventData = (
     OrderEventFillData
     | OrderEventPlacedData
     | OrderEventCanceledData
     | OrderEventModifiedData
-    | OrderEventRejectedData,
-    Field(discriminator="type"),
-]
+    | OrderEventRejectedData
+)
 
 
 class OrderEvent(BaseModel):

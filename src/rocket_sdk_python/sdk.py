@@ -133,6 +133,19 @@ class RocketSDK:
         tx = sign_transaction(raw_tx, self._signer)
         return self._client.submit_transaction(tx)
 
+    def set_leverage(
+        self,
+        instrument_id: InstrumentId,
+        leverage: int,
+        account: AccountAddress | None = None,
+    ) -> TransactionResponse:
+        to = account if account is not None else self._signer.address
+        raw_tx = build_set_leverage(
+            self._signer.address, to, instrument_id, leverage, self._next_nonce()
+        )
+        tx = sign_transaction(raw_tx, self._signer)
+        return self._client.submit_transaction(tx)
+
     def modify_order(
         self,
         order_id: GlobalOrderId,

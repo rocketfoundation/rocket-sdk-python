@@ -1,5 +1,3 @@
-from typing import Annotated, Literal
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from rocket_sdk_python.types.primitives import (
@@ -79,84 +77,128 @@ class CandleView(BaseModel):
     is_closed: bool = Field(alias="isClosed")
 
 
+class QuoteUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+    quote: QuoteView
+
+
 class QuoteUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["QuoteUpdate"] = "QuoteUpdate"
+    QuoteUpdate: QuoteUpdateFields
+
+
+class OrderbookUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     instrument_id: InstrumentId = Field(alias="instrumentId")
-    quote: QuoteView
+    orderbook: OrderbookView
 
 
 class OrderbookUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["OrderbookUpdate"] = "OrderbookUpdate"
+    OrderbookUpdate: OrderbookUpdateFields
+
+
+class MarkPriceUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     instrument_id: InstrumentId = Field(alias="instrumentId")
-    orderbook: OrderbookView
+    mark_price: MarkPriceView = Field(alias="markPrice")
 
 
 class MarkPriceUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["MarkPriceUpdate"] = "MarkPriceUpdate"
-    instrument_id: InstrumentId = Field(alias="instrumentId")
+    MarkPriceUpdate: MarkPriceUpdateFields
+
+
+class AssetMarkPriceUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    asset_id: AssetId = Field(alias="assetId")
     mark_price: MarkPriceView = Field(alias="markPrice")
 
 
 class AssetMarkPriceUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["AssetMarkPriceUpdate"] = "AssetMarkPriceUpdate"
-    asset_id: AssetId = Field(alias="assetId")
-    mark_price: MarkPriceView = Field(alias="markPrice")
+    AssetMarkPriceUpdate: AssetMarkPriceUpdateFields
 
 
-class OrderEventUpdate(BaseModel):
+class OrderEventUpdateFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["OrderEventUpdate"] = "OrderEventUpdate"
     account: AccountAddress | None = None
     instrument_id: InstrumentId | None = Field(default=None, alias="instrumentId")
     order_events: list[OrderEventClientView] = Field(alias="orderEvents")
 
 
-class CollateralUpdate(BaseModel):
+class OrderEventUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["CollateralUpdate"] = "CollateralUpdate"
+    OrderEventUpdate: OrderEventUpdateFields
+
+
+class CollateralUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     asset_id: AssetId = Field(alias="assetId")
     account: AccountAddress
     collateral: str
 
 
+class CollateralUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    CollateralUpdate: CollateralUpdateFields
+
+
+class PositionUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    account: AccountAddress
+    positions: PositionSetView
+
+
 class PositionUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["PositionUpdate"] = "PositionUpdate"
+    PositionUpdate: PositionUpdateFields
+
+
+class AccountRiskUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     account: AccountAddress
-    positions: PositionSetView
+    risk: AccountRiskView
 
 
 class AccountRiskUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["AccountRiskUpdate"] = "AccountRiskUpdate"
+    AccountRiskUpdate: AccountRiskUpdateFields
+
+
+class OpenOrdersUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     account: AccountAddress
-    risk: AccountRiskView
+    orders: list[OpenOrderView]
 
 
 class OpenOrdersUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["OpenOrdersUpdate"] = "OpenOrdersUpdate"
-    account: AccountAddress
-    orders: list[OpenOrderView]
+    OpenOrdersUpdate: OpenOrdersUpdateFields
 
 
-class FundingRateUpdate(BaseModel):
+class FundingRateUpdateFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["FundingRateUpdate"] = "FundingRateUpdate"
     instrument_id: InstrumentId = Field(alias="instrumentId")
     funding_rate: str = Field(alias="fundingRate")
     premium_index: str = Field(alias="premiumIndex")
@@ -164,25 +206,40 @@ class FundingRateUpdate(BaseModel):
     round: Round
 
 
+class FundingRateUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    FundingRateUpdate: FundingRateUpdateFields
+
+
+class InstrumentStatsUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+    stats: InstrumentStatsView
+
+
 class InstrumentStatsUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["InstrumentStatsUpdate"] = "InstrumentStatsUpdate"
-    instrument_id: InstrumentId = Field(alias="instrumentId")
-    stats: InstrumentStatsView
+    InstrumentStatsUpdate: InstrumentStatsUpdateFields
+
+
+class CandleUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    candle: CandleView
 
 
 class CandleUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["CandleUpdate"] = "CandleUpdate"
-    candle: CandleView
+    CandleUpdate: CandleUpdateFields
 
 
-class PositionFundingUpdate(BaseModel):
+class PositionFundingUpdateFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["PositionFundingUpdate"] = "PositionFundingUpdate"
     account: AccountAddress
     funding_rate: str = Field(alias="fundingRate")
     timestamp: BlockTimestamp
@@ -191,42 +248,50 @@ class PositionFundingUpdate(BaseModel):
     pnl: str
 
 
+class PositionFundingUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    PositionFundingUpdate: PositionFundingUpdateFields
+
+
+class LastMatchPriceUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+    last_match_price: str = Field(alias="lastMatchPrice")
+
+
 class LastMatchPriceUpdate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["LastMatchPriceUpdate"] = "LastMatchPriceUpdate"
-    instrument_id: InstrumentId = Field(alias="instrumentId")
-    last_match_price: str = Field(alias="lastMatchPrice")
+    LastMatchPriceUpdate: LastMatchPriceUpdateFields
 
 
 class SubscribeConfirmation(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["SubscribeConfirmation"] = "SubscribeConfirmation"
-    subscription: SubscriptionKind
+    SubscribeConfirmation: SubscriptionKind
 
 
 class UnsubscribeConfirmation(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["UnsubscribeConfirmation"] = "UnsubscribeConfirmation"
-    subscription: SubscriptionKind
+    UnsubscribeConfirmation: SubscriptionKind
 
 
 class Pong(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Pong"] = "Pong"
+    Pong: None = None
 
 
 class ErrorMessage(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Error"] = "Error"
-    message: str
+    Error: str
 
 
-ServerMessage = Annotated[
+ServerMessage = (
     QuoteUpdate
     | OrderbookUpdate
     | MarkPriceUpdate
@@ -244,7 +309,6 @@ ServerMessage = Annotated[
     | SubscribeConfirmation
     | UnsubscribeConfirmation
     | Pong
-    | ErrorMessage,
-    Field(discriminator="type"),
-]
+    | ErrorMessage
+)
 

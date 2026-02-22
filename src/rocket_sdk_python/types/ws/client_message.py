@@ -1,6 +1,4 @@
-from typing import Annotated, Literal
-
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 from rocket_sdk_python.types.ws.subscription_kind import SubscriptionKind
 
@@ -8,25 +6,20 @@ from rocket_sdk_python.types.ws.subscription_kind import SubscriptionKind
 class Subscribe(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Subscribe"] = "Subscribe"
-    subscription: SubscriptionKind
+    Subscribe: SubscriptionKind
 
 
 class Unsubscribe(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Unsubscribe"] = "Unsubscribe"
-    subscription: SubscriptionKind
+    Unsubscribe: SubscriptionKind
 
 
 class Ping(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    type: Literal["Ping"] = "Ping"
+    Ping: None = None
 
 
-ClientMessage = Annotated[
-    Subscribe | Unsubscribe | Ping,
-    Field(discriminator="type"),
-]
+ClientMessage = Subscribe | Unsubscribe | Ping
 
