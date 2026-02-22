@@ -8,7 +8,7 @@ Signature = Annotated[
     AfterValidator(lambda v: v if v.startswith("0x") else f"0x{v}"),
 ]
 
-InstrumentId = int
+InstrumentId = str
 
 AssetId = int
 
