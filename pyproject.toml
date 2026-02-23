@@ -4,11 +4,12 @@ requires = ["hatchling"]
 
 [project]
 dependencies = [
-    "eth-account>=0.13.7",
-    "eth-keys>=0.7.0",
-    "httpx>=0.28.1",
-    "msgpack>=1.1.2",
-    "pydantic>=2.12.5",
+  "eth-account>=0.13.7",
+  "eth-keys>=0.7.0",
+  "httpx>=0.28.1",
+  "msgpack>=1.1.2",
+  "pydantic>=2.12.5",
+  "websockets>=16.0",
 ]
 description = "Python SDK for Rocket Chain"
 name = "rocket_sdk_python"
@@ -36,5 +37,5 @@ packages = ["src/rocket_sdk_python"]
 
 [dependency-groups]
 dev = [
-    "pytest-asyncio>=1.3.0",
+  "pytest-asyncio>=1.3.0",
 ]
