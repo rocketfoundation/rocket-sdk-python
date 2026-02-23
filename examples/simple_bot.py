@@ -24,8 +24,7 @@ def main():
             return
 
         instrument_id = next(
-            (k for k, v in instruments.items() if v.ticker == "PERP_ETH_USDC"),
-            None
+            (k for k, v in instruments.items() if v.ticker == "PERP_ETH_USDC"), None
         )
         instrument = instruments[instrument_id]
         print(f"Selected instrument: {instrument.ticker} (ID: {instrument_id})")
@@ -55,7 +54,9 @@ def main():
         if positions_response.positions:
             print(f"Open positions: {len(positions_response.positions.root)}")
             for instrument_id, pos in positions_response.positions.root.items():
-                print(f"  Instrument {instrument_id}: quantity={pos.quantity}, average_price={pos.average_price}")
+                print(
+                    f"  Instrument {instrument_id}: quantity={pos.quantity}, average_price={pos.average_price}"
+                )
         else:
             print("Open positions: 0")
         print()
@@ -65,7 +66,9 @@ def main():
         if orders_response.orders:
             print(f"Open orders: {len(orders_response.orders)}")
             for order in orders_response.orders:
-                print(f"  Order {order.order_id}: {order.side} {order.quantity} @ {order.price}")
+                print(
+                    f"  Order {order.order_id}: {order.side} {order.quantity} @ {order.price}"
+                )
         else:
             print("Open orders: 0")
         print()
@@ -78,7 +81,9 @@ def main():
         bid_price_scaled = str(bid_price)
         quantity = str(1)
 
-        print(f"Placing limit BUY order at {bid_price:.2f} (scaled: {bid_price_scaled})...")
+        print(
+            f"Placing limit BUY order at {bid_price:.2f} (scaled: {bid_price_scaled})..."
+        )
         print(f"  Last price: {last_price:.2f}")
         print(f"  Bid price: {bid_price:.2f} (90% of last)")
         print(f"  Quantity: {quantity}")
@@ -116,22 +121,30 @@ def main():
                         print(f"Event data type: {type(event_data).__name__}")
 
                         if hasattr(event_data, "placed"):
-                            print(f"✓ Event: PLACED (order is on the book)")
+                            print("✓ Event: PLACED (order is on the book)")
                             print(f"  Price (scaled): {event_data.placed.price}")
                             print(f"  Size (scaled): {event_data.placed.size}")
                             print(f"  Price scale: {event_data.placed.price_scale}")
-                            print(f"  Quantity scale: {event_data.placed.quantity_scale}")
-                            print(f"  Settlement asset: {event_data.placed.settlement_asset}")
+                            print(
+                                f"  Quantity scale: {event_data.placed.quantity_scale}"
+                            )
+                            print(
+                                f"  Settlement asset: {event_data.placed.settlement_asset}"
+                            )
                             print(f"  Is passive: {event_data.placed.is_passive}")
                             print(f"  Is filled: {event_data.placed.is_filled}")
-                            print(f"  Order quantity: {event_data.placed.order_quantity}")
+                            print(
+                                f"  Order quantity: {event_data.placed.order_quantity}"
+                            )
                         elif hasattr(event_data, "fill"):
-                            print(f"✓ Event: FILL (order was immediately filled!)")
+                            print("✓ Event: FILL (order was immediately filled!)")
                             print(f"  Price (scaled): {event_data.fill.price}")
                             print(f"  Size (scaled): {event_data.fill.size}")
                             print(f"  Price scale: {event_data.fill.price_scale}")
                             print(f"  Quantity scale: {event_data.fill.quantity_scale}")
-                            print(f"  Settlement asset: {event_data.fill.settlement_asset}")
+                            print(
+                                f"  Settlement asset: {event_data.fill.settlement_asset}"
+                            )
                             print(f"  PnL: {event_data.fill.pnl}")
                             print(f"  Is passive: {event_data.fill.is_passive}")
                             print(f"  Is filled: {event_data.fill.is_filled}")
@@ -139,13 +152,13 @@ def main():
                             print(f"  Fee rate: {event_data.fill.fee_rate}")
                             print(f"  Fee amount: {event_data.fill.fee_amount}")
                         elif hasattr(event_data, "canceled"):
-                            print(f"✓ Event: CANCELED")
+                            print("✓ Event: CANCELED")
                         elif hasattr(event_data, "modified"):
-                            print(f"✓ Event: MODIFIED")
+                            print("✓ Event: MODIFIED")
                             print(f"  Price (scaled): {event_data.modified.price}")
                             print(f"  Size (scaled): {event_data.modified.size}")
                         elif hasattr(event_data, "rejected"):
-                            print(f"✗ Event: REJECTED")
+                            print("✗ Event: REJECTED")
                             print(f"  Reason: {event_data.rejected.reason}")
                     elif result.type == "Err":
                         print(f"✗ Order failed: {result.message}")
@@ -156,6 +169,7 @@ def main():
         except Exception as e:
             print(f"Error placing order: {e}")
             import traceback
+
             traceback.print_exc()
             print()
 
@@ -175,31 +189,43 @@ def main():
         print(f"Open orders: {len(orders_response.orders)}")
         if orders_response.orders:
             for order in orders_response.orders:
-                print(f"  Order {order.order_id}: {order.side} {order.quantity} @ {order.price}")
+                print(
+                    f"  Order {order.order_id}: {order.side} {order.quantity} @ {order.price}"
+                )
                 if order.order_id == placed_order_id:
-                    print(f"    ✓ This is the order we just placed!")
+                    print("    ✓ This is the order we just placed!")
         else:
             print("  (No open orders)")
         print()
 
         if placed_order_id:
-            if orders_response.orders and any(o.order_id == placed_order_id for o in orders_response.orders):
+            if orders_response.orders and any(
+                o.order_id == placed_order_id for o in orders_response.orders
+            ):
                 print(f"✓ Order {placed_order_id} is successfully on the order book!")
             else:
                 print(f"✗ Order {placed_order_id} is NOT in open orders.")
                 print()
                 print("Possible reasons:")
-                print("  1. Order was immediately filled (but event said is_filled=False)")
-                print("  2. Order was rejected after placement due to margin requirements")
+                print(
+                    "  1. Order was immediately filled (but event said is_filled=False)"
+                )
+                print(
+                    "  2. Order was rejected after placement due to margin requirements"
+                )
                 print("  3. Stream state hasn't updated yet (try waiting longer)")
                 print("  4. Order storage issue on the server")
                 print()
                 print("Debug info:")
-                print(f"  - Settlement asset: {instrument.settlement_asset} (should be 0 for USDC)")
+                print(
+                    f"  - Settlement asset: {instrument.settlement_asset} (should be 0 for USDC)"
+                )
                 print(f"  - Your USDC balance: {collaterals.get(0, '0')}")
                 quantity_float = float(quantity) / instrument.quantity_scale
                 order_value = bid_price * quantity_float
-                print(f"  - Order value: {bid_price} * {quantity_float} = {order_value}")
+                print(
+                    f"  - Order value: {bid_price} * {quantity_float} = {order_value}"
+                )
         print()
 
         if orders_response.orders:
@@ -218,4 +244,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
