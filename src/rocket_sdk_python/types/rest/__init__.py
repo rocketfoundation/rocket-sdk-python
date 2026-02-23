@@ -104,4 +104,3 @@ __all__ = [
     "InstrumentDailyPriceChange",
     "PaginationData",
 ]
-

@@ -65,4 +65,3 @@ def sign_eip712(message: bytes, private_key: str) -> str:
     digest = eip712_signing_hash(message)
     signed = Account.unsafe_sign_hash(digest, private_key=private_key)
     return "0x" + signed.signature.hex()
-

@@ -14,4 +14,3 @@ class GetMaxLeverageResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     max_leverage_setting: int = Field(alias="maxLeverageSetting")
-

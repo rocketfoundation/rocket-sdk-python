@@ -35,4 +35,3 @@ def get_credentials():
         private_key = "0x" + private_key
 
     return private_key, rpc_url
-

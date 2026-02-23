@@ -101,4 +101,3 @@ class WsClientSync:
             asyncio.run_coroutine_threadsafe(self._client.close(), self._loop)
         if self._thread:
             self._thread.join(timeout=5)
-

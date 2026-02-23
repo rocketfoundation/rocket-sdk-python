@@ -21,4 +21,3 @@ class PositionFundingEventView(BaseModel):
 
 
 PositionFundingEventsClientViewSet = RootModel[list[PositionFundingEventView]]
-

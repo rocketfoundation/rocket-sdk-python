@@ -22,4 +22,3 @@ def sign_transaction(
         signature_scheme=scheme,
         signature=signature,
     )
-

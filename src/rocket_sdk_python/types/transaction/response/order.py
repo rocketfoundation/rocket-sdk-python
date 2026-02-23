@@ -125,4 +125,3 @@ PlaceOrderResult = Annotated[
     PlaceOrderSuccess | PlaceOrderErr,
     Field(discriminator="type"),
 ]
-

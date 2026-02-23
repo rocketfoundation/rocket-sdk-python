@@ -50,4 +50,3 @@ class VaultStatsSetViewEntry(BaseModel):
 
 
 VaultStatsSetView = list[VaultStatsSetViewEntry]
-

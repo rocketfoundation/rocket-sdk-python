@@ -86,7 +86,14 @@ class RestClient:
                 key = next(iter(obj.keys()))
                 # Only transform if the key starts with uppercase (variant name pattern)
                 # and is not a known field name like 'results', 'instruments', etc.
-                if key[0].isupper() and key not in ['PlaceOrder', 'CreateVault', 'VaultDeposit', 'VaultWithdraw', 'SetLeverage', 'Withdraw']:
+                if key[0].isupper() and key not in [
+                    "PlaceOrder",
+                    "CreateVault",
+                    "VaultDeposit",
+                    "VaultWithdraw",
+                    "SetLeverage",
+                    "Withdraw",
+                ]:
                     value = obj[key]
                     transformed_value = self._transform_rust_enum(value, parent_key=key)
 
@@ -100,11 +107,20 @@ class RestClient:
                         else:
                             return {"type": key, "message": transformed_value}
                     # For event data variants (placed, canceled, etc.), merge the fields
-                    elif key.lower() in ["placed", "canceled", "modified", "fill", "rejected"]:
+                    elif key.lower() in [
+                        "placed",
+                        "canceled",
+                        "modified",
+                        "fill",
+                        "rejected",
+                    ]:
                         if isinstance(transformed_value, dict):
                             return {"type": key.capitalize(), **transformed_value}
                         else:
-                            return {"type": key.capitalize(), "value": transformed_value}
+                            return {
+                                "type": key.capitalize(),
+                                "value": transformed_value,
+                            }
                     # Default: merge fields
                     elif isinstance(transformed_value, dict):
                         return {"type": key, **transformed_value}
@@ -112,9 +128,13 @@ class RestClient:
                         return {"type": key, "value": transformed_value}
 
             # Recursively transform nested objects
-            return {k: self._transform_rust_enum(v, parent_key=k) for k, v in obj.items()}
+            return {
+                k: self._transform_rust_enum(v, parent_key=k) for k, v in obj.items()
+            }
         elif isinstance(obj, list):
-            return [self._transform_rust_enum(item, parent_key=parent_key) for item in obj]
+            return [
+                self._transform_rust_enum(item, parent_key=parent_key) for item in obj
+            ]
         else:
             return obj
 
@@ -127,21 +147,21 @@ class RestClient:
 
         # API doesn't return a 'type' field at the top level, infer it from the instruction
         instruction = tx.data.instruction
-        if hasattr(instruction, 'PlaceOrder'):
-            data['type'] = 'PlaceOrder'
-        elif hasattr(instruction, 'Withdraw'):
-            data['type'] = 'Ok'  # Withdraw returns Ok response
-        elif hasattr(instruction, 'CreateVault'):
-            data['type'] = 'CreateVault'
-        elif hasattr(instruction, 'VaultDeposit'):
-            data['type'] = 'VaultDeposit'
-        elif hasattr(instruction, 'VaultWithdraw'):
-            data['type'] = 'VaultWithdraw'
-        elif hasattr(instruction, 'SetLeverage'):
-            data['type'] = 'Ok'  # SetLeverage returns Ok response
+        if hasattr(instruction, "PlaceOrder"):
+            data["type"] = "PlaceOrder"
+        elif hasattr(instruction, "Withdraw"):
+            data["type"] = "Ok"  # Withdraw returns Ok response
+        elif hasattr(instruction, "CreateVault"):
+            data["type"] = "CreateVault"
+        elif hasattr(instruction, "VaultDeposit"):
+            data["type"] = "VaultDeposit"
+        elif hasattr(instruction, "VaultWithdraw"):
+            data["type"] = "VaultWithdraw"
+        elif hasattr(instruction, "SetLeverage"):
+            data["type"] = "Ok"  # SetLeverage returns Ok response
         else:
             # Default to Ok if we can't determine the type
-            data['type'] = 'Ok'
+            data["type"] = "Ok"
 
         return _tx_response_adapter.validate_python(data)
 
@@ -150,12 +170,16 @@ class RestClient:
         return self._post("/batch_transactions", body)
 
     def get_account_nonce(self, account: AccountAddress) -> int:
-        params = GetAccountNonce(account=account).model_dump(by_alias=True, exclude_none=True)
+        params = GetAccountNonce(account=account).model_dump(
+            by_alias=True, exclude_none=True
+        )
         data = self._get("/account-nonce", params)
         return GetAccountNonceResponse.model_validate(data).nonce
 
     def get_account_fees(self, account: AccountAddress) -> GetAccountFeesResponse:
-        params = GetAccountFees(account=account).model_dump(by_alias=True, exclude_none=True)
+        params = GetAccountFees(account=account).model_dump(
+            by_alias=True, exclude_none=True
+        )
         data = self._get("/account-fees", params)
         return GetAccountFeesResponse.model_validate(data)
 
@@ -207,9 +231,9 @@ class RestClient:
     def get_max_leverage(
         self, account: AccountAddress, instrument_id: InstrumentId
     ) -> GetMaxLeverageResponse:
-        params = GetMaxLeverage(account=account, instrument_id=instrument_id).model_dump(
-            by_alias=True
-        )
+        params = GetMaxLeverage(
+            account=account, instrument_id=instrument_id
+        ).model_dump(by_alias=True)
         data = self._get("/max-leverage", params)
         return GetMaxLeverageResponse.model_validate(data)
 
@@ -342,4 +366,3 @@ class RestClient:
         params = GetFaucetClaim(account=account).model_dump(by_alias=True)
         data = self._get("/faucet-claim", params)
         return GetFaucetClaimResponse.model_validate(data)
-

@@ -100,4 +100,3 @@ OrderRequestSet = list[OrderRequest]
 
 class PlaceOrderInstruction(BaseModel):
     PlaceOrder: OrderRequestSet
-

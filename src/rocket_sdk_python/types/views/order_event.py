@@ -84,4 +84,3 @@ class OrderEventClientView(BaseModel):
     account: AccountAddress
     instrument: InstrumentId
     event_data: OrderEventDataClientView = Field(alias="eventData")
-

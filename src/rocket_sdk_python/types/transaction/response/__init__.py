@@ -69,7 +69,9 @@ class UpdateOracleConfigResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     type: Literal["UpdateOracleConfig"] = "UpdateOracleConfig"
-    new_quote_symbol_pattern: str | None = Field(default=None, alias="newQuoteSymbolPattern")
+    new_quote_symbol_pattern: str | None = Field(
+        default=None, alias="newQuoteSymbolPattern"
+    )
     updated_oracle_settings: OracleSettingsMap | None = Field(
         default=None, alias="updatedOracleSettings"
     )
@@ -144,4 +146,3 @@ __all__ = [
     "VaultDepositTransactionResponse",
     "VaultWithdrawTransactionResponse",
 ]
-

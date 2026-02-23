@@ -29,4 +29,3 @@ class GetInstrumentsResponse(BaseModel):
     daily_changes: dict[InstrumentId, InstrumentDailyPriceChange] = Field(
         alias="dailyChanges"
     )
-

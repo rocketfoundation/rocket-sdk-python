@@ -13,4 +13,3 @@ class SetLeverageData(BaseModel):
 
 class SetLeverageInstruction(BaseModel):
     SetLeverage: SetLeverageData
-

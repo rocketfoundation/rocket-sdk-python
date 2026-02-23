@@ -1,4 +1,3 @@
-from eth_account import Account
 from eth_keys import keys
 
 from rocket_sdk_python.crypto.eip191 import sign_eip191
@@ -31,11 +30,12 @@ class AccountSigner:
     def address(self) -> AccountAddress:
         return self._address
 
-    def sign(self, message: bytes, scheme: SignatureScheme = SignatureScheme.EIP191) -> str:
+    def sign(
+        self, message: bytes, scheme: SignatureScheme = SignatureScheme.EIP191
+    ) -> str:
         if scheme == SignatureScheme.EIP191:
             return sign_eip191(message, self._private_key)
         elif scheme == SignatureScheme.EIP712:
             return sign_eip712(message, self._private_key)
         else:
             raise ValueError(f"Unsupported signature scheme: {scheme}")
-

@@ -40,4 +40,3 @@ def deserialize(data: bytes, fmt: SerializationFormat) -> RawTransaction:
         return deserialize_msgpack(data)
     else:
         raise ValueError(f"Unsupported serialization format: {fmt}")
-

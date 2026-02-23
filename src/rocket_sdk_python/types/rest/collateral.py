@@ -13,4 +13,3 @@ class GetCollateral(BaseModel):
 
 class GetCollateralsResponse(BaseModel):
     collaterals: CollateralView
-

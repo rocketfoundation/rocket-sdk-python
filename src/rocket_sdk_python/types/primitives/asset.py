@@ -38,4 +38,3 @@ class AssetRowData(BaseModel):
     mark_price: PriceTick = Field(alias="markPrice")
     scenario_grid: ScenarioGrid = Field(alias="scenarioGrid")
     initial_scenario_grid: ScenarioGrid = Field(alias="initialScenarioGrid")
-

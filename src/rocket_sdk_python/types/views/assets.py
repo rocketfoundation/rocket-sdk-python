@@ -13,4 +13,3 @@ class AssetView(BaseModel):
 
 
 AssetSetView = RootModel[dict[AssetId, AssetView]]
-

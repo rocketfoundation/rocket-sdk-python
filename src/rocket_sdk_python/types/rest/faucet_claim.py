@@ -15,4 +15,3 @@ class GetFaucetClaimResponse(BaseModel):
     last_claim_timestamp: BlockTimestamp | None = Field(
         default=None, alias="lastClaimTimestamp"
     )
-

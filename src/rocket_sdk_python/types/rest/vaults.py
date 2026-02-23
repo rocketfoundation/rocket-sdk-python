@@ -8,4 +8,3 @@ GetVaults = PaginationData
 
 class GetVaultsResponse(BaseModel):
     vaults: VaultSetView
-

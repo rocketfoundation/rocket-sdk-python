@@ -14,4 +14,3 @@ class GetAccountFeesResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     account_fees: AccountFeesClientView = Field(alias="accountFees")
-

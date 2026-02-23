@@ -54,7 +54,9 @@ def set_leverage(
     return RawTransaction(
         sender=sender,
         instruction=SetLeverageInstruction(
-            SetLeverage=SetLeverageData(to=to, instrument_id=instrument_id, leverage=leverage),
+            SetLeverage=SetLeverageData(
+                to=to, instrument_id=instrument_id, leverage=leverage
+            ),
         ),
         nonce=nonce,
     )
@@ -105,4 +107,3 @@ def vault_withdraw(
         ),
         nonce=nonce,
     )
-

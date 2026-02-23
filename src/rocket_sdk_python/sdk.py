@@ -166,21 +166,6 @@ class RocketSDK:
         tx = sign_transaction(raw_tx, self._signer)
         return self._client.submit_transaction(tx)
 
-    def set_leverage(
-        self,
-        instrument_id: InstrumentId,
-        leverage: int,
-    ) -> TransactionResponse:
-        raw_tx = build_set_leverage(
-            sender=self._signer.address,
-            to=self._signer.address,
-            instrument_id=instrument_id,
-            leverage=leverage,
-            nonce=self._next_nonce(),
-        )
-        tx = sign_transaction(raw_tx, self._signer)
-        return self._client.submit_transaction(tx)
-
     def withdraw(
         self,
         asset_id: AssetId,
@@ -202,15 +187,15 @@ class RocketSDK:
     ) -> GetPositionsResponse:
         return self._client.get_positions(self._signer.address, instrument_id)
 
-    def get_collateral(
-        self, asset_id: AssetId | None = None
-    ) -> GetCollateralsResponse:
+    def get_collateral(self, asset_id: AssetId | None = None) -> GetCollateralsResponse:
         return self._client.get_collateral(self._signer.address, asset_id)
 
     def get_open_orders(
         self, page_number: int | None = None, page_size: int | None = None
     ) -> GetOpenOrdersResponse:
-        return self._client.get_open_orders(self._signer.address, page_number, page_size)
+        return self._client.get_open_orders(
+            self._signer.address, page_number, page_size
+        )
 
     def create_vault(
         self,
@@ -253,4 +238,3 @@ class RocketSDK:
         )
         tx = sign_transaction(raw_tx, self._signer)
         return self._client.submit_transaction(tx)
-

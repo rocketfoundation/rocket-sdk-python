@@ -16,12 +16,15 @@ class InstrumentView(BaseModel):
     strike: str | None = None
     price_scale: int = Field(alias="priceScale")
     quantity_scale: int = Field(alias="quantityScale")
-    worst_case_price_move_pct: str | None = Field(default=None, alias="worstCasePriceMovePct")
+    worst_case_price_move_pct: str | None = Field(
+        default=None, alias="worstCasePriceMovePct"
+    )
     max_leverage: str | None = Field(default=None, alias="maxLeverage")
     last_match_price: str = Field(alias="lastMatchPrice")
-    worst_case_price_move_pct_margin: str | None = Field(default=None, alias="worstCasePriceMovePctMargin")
+    worst_case_price_move_pct_margin: str | None = Field(
+        default=None, alias="worstCasePriceMovePctMargin"
+    )
     max_leverage_margin: str | None = Field(default=None, alias="maxLeverageMargin")
 
 
 InstrumentsSetView = RootModel[dict[InstrumentId, InstrumentView]]
-

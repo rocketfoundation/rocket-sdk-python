@@ -31,4 +31,3 @@ class VaultHistoryEntryClientView(BaseModel):
 
 
 VaultHistoryClientView = RootModel[list[VaultHistoryEntryClientView]]
-

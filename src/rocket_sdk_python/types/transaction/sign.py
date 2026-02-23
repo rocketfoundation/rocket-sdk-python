@@ -51,4 +51,3 @@ class Transaction(BaseModel):
         default=SignatureScheme.EIP191, alias="signatureScheme"
     )
     signature: Signature
-

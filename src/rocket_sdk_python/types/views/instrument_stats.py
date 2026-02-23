@@ -12,4 +12,3 @@ class InstrumentStatsView(BaseModel):
 
 
 InstrumentStatsMapView = dict[InstrumentId, InstrumentStatsView]
-

@@ -13,4 +13,3 @@ class WithdrawData(BaseModel):
 
 class WithdrawInstruction(BaseModel):
     Withdraw: WithdrawData
-

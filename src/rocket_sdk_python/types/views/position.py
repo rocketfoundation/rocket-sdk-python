@@ -16,4 +16,3 @@ class PositionView(BaseModel):
 
 
 PositionSetView = RootModel[dict[InstrumentId, PositionView]]
-

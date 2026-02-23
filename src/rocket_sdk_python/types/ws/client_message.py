@@ -22,4 +22,3 @@ class Ping(BaseModel):
 
 
 ClientMessage = Subscribe | Unsubscribe | Ping
-

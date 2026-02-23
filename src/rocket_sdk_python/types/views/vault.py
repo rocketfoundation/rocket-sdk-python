@@ -13,4 +13,3 @@ class VaultView(BaseModel):
 
 
 VaultSetView = RootModel[list[VaultView]]
-

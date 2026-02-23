@@ -12,4 +12,3 @@ def sign_eip191(message: bytes, private_key: str) -> str:
     signable = encode_defunct(primitive=message)
     signed = Account.sign_message(signable, private_key=private_key)
     return "0x" + signed.signature.hex()
-

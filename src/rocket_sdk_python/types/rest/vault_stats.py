@@ -18,4 +18,3 @@ class GetVaultStatsResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     vault_stats: VaultStatsSetView = Field(alias="vaultStats")
-

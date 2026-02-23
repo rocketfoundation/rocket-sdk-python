@@ -10,18 +10,10 @@ from rocket_sdk_python.sdk import RocketSDK
 from rocket_sdk_python.types.ws import (
     CollateralSubscription,
     CollateralSubscriptionFields,
-    InstrumentStatsSubscription,
-    InstrumentStatsSubscriptionFields,
     OpenOrdersSubscription,
     OpenOrdersSubscriptionFields,
-    OrderbookSubscription,
-    OrderbookSubscriptionFields,
     OrderEventsSubscription,
     OrderEventsSubscriptionFields,
-    PositionSubscription,
-    PositionSubscriptionFields,
-    PriceFeedSubscription,
-    PriceFeedSubscriptionFields,
     ServerMessage,
     Subscribe,
 )
@@ -31,14 +23,15 @@ from example_utils import get_credentials
 
 def handle_message(msg: ServerMessage):
     import datetime
+
     timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"SERVER MESSAGE [{timestamp}]:")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     if hasattr(msg, "OrderEventUpdate"):
-        print(f"📦 TYPE: OrderEventUpdate")
+        print("📦 TYPE: OrderEventUpdate")
         update = msg.OrderEventUpdate
         print(f"Account: {update.account}")
         print(f"Instrument ID: {update.instrument_id}")
@@ -52,7 +45,7 @@ def handle_message(msg: ServerMessage):
             print(f"    Instrument: {event.instrument}")
 
             if event.event_data.type == "Placed":
-                print(f"    ✓ EVENT: PLACED")
+                print("    ✓ EVENT: PLACED")
                 print(f"      Price: {event.event_data.price}")
                 print(f"      Size: {event.event_data.size}")
                 print(f"      Remaining Size: {event.event_data.remaining_size}")
@@ -62,7 +55,7 @@ def handle_message(msg: ServerMessage):
                 print(f"      Is Filled: {event.event_data.is_filled}")
 
             elif event.event_data.type == "Fill":
-                print(f"    ✓ EVENT: FILL")
+                print("    ✓ EVENT: FILL")
                 print(f"      Price: {event.event_data.price}")
                 print(f"      Size: {event.event_data.size}")
                 print(f"      Remaining Size: {event.event_data.remaining_size}")
@@ -76,25 +69,27 @@ def handle_message(msg: ServerMessage):
                 print(f"      Is Liquidation: {event.event_data.is_liquidation}")
 
             elif event.event_data.type == "Rejected":
-                print(f"    ✗✗✗ EVENT: REJECTED ✗✗✗")
+                print("    ✗✗✗ EVENT: REJECTED ✗✗✗")
                 print(f"      🚨 REJECTION REASON: {event.event_data.reason}")
                 print(f"      Order ID: {event.order_id}")
                 print(f"      Instrument: {event.instrument}")
 
             elif event.event_data.type == "Cancelled":
-                print(f"    ⊘ EVENT: CANCELLED")
+                print("    ⊘ EVENT: CANCELLED")
 
             elif event.event_data.type == "Modified":
-                print(f"    ⚙ EVENT: MODIFIED")
+                print("    ⚙ EVENT: MODIFIED")
                 print(f"      Price: {event.event_data.price}")
                 print(f"      Size: {event.event_data.size}")
 
             else:
                 print(f"    ⚠️  UNKNOWN EVENT TYPE: {event.event_data.type}")
-                print(f"      Raw event data: {event.event_data.model_dump_json(by_alias=True, indent=6)}")
+                print(
+                    f"      Raw event data: {event.event_data.model_dump_json(by_alias=True, indent=6)}"
+                )
 
     elif hasattr(msg, "OpenOrdersUpdate"):
-        print(f"📋 TYPE: OpenOrdersUpdate")
+        print("📋 TYPE: OpenOrdersUpdate")
         update = msg.OpenOrdersUpdate
         print(f"Account: {update.account}")
         print(f"Number of orders: {len(update.orders)}")
@@ -107,50 +102,54 @@ def handle_message(msg: ServerMessage):
             print(f"    Quantity: {order.quantity}")
 
     elif hasattr(msg, "CollateralUpdate"):
-        print(f"💰 TYPE: CollateralUpdate")
+        print("💰 TYPE: CollateralUpdate")
         update = msg.CollateralUpdate
-        asset_name = {0: "USDC", 1: "BTC", 2: "ETH"}.get(update.asset_id, f"Asset {update.asset_id}")
+        asset_name = {0: "USDC", 1: "BTC", 2: "ETH"}.get(
+            update.asset_id, f"Asset {update.asset_id}"
+        )
         print(f"Account: {update.account}")
         print(f"Asset: {asset_name} (ID {update.asset_id})")
         print(f"Collateral: {update.collateral}")
 
     elif hasattr(msg, "PositionUpdate"):
-        print(f"📊 TYPE: PositionUpdate")
+        print("📊 TYPE: PositionUpdate")
         update = msg.PositionUpdate
         print(f"Account: {update.account}")
-        print(f"Positions: {json.dumps(update.positions.model_dump(by_alias=True), indent=2)}")
+        print(
+            f"Positions: {json.dumps(update.positions.model_dump(by_alias=True), indent=2)}"
+        )
 
     elif hasattr(msg, "QuoteUpdate"):
-        print(f"📈 TYPE: QuoteUpdate (Orderbook)")
+        print("📈 TYPE: QuoteUpdate (Orderbook)")
         update = msg.QuoteUpdate
         print(f"Instrument ID: {update.instrument_id}")
         print(f"Best bid: {update.quote.best_bid}")
         print(f"Best ask: {update.quote.best_ask}")
 
     elif hasattr(msg, "MarkPriceUpdate"):
-        print(f"💹 TYPE: MarkPriceUpdate (PriceFeed)")
+        print("💹 TYPE: MarkPriceUpdate (PriceFeed)")
         update = msg.MarkPriceUpdate
         print(f"Instrument ID: {update.instrument_id}")
         print(f"Mark price: {update.mark_price}")
 
     elif hasattr(msg, "InstrumentStatsUpdate"):
-        print(f"📊 TYPE: InstrumentStatsUpdate")
+        print("📊 TYPE: InstrumentStatsUpdate")
         update = msg.InstrumentStatsUpdate
         print(f"Instrument ID: {update.instrument_id}")
         print(f"Stats: {json.dumps(update.stats.model_dump(by_alias=True), indent=2)}")
 
     elif hasattr(msg, "SubscribeConfirmation"):
-        print(f"✓ TYPE: SubscribeConfirmation")
+        print("✓ TYPE: SubscribeConfirmation")
 
     elif hasattr(msg, "Error"):
-        print(f"❌ TYPE: Error")
+        print("❌ TYPE: Error")
         print(f"Message: {msg.Error}")
 
     else:
         print(f"📨 TYPE: {type(msg).__name__}")
         print(f"Raw message: {msg.model_dump_json(by_alias=True, indent=2)}")
 
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
 
 async def main():
@@ -183,9 +182,8 @@ async def main():
         return
 
     instrument_id = next(
-            (k for k, v in instruments.items() if v.ticker == "PERP_ETH_USDC"),
-            None
-        )
+        (k for k, v in instruments.items() if v.ticker == "PERP_ETH_USDC"), None
+    )
     instrument = instruments[instrument_id]
     print(f"Using instrument: {instrument.ticker} (ID: {instrument.id})\n")
 
@@ -257,9 +255,9 @@ async def main():
         )
     )
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("LISTENING FOR WEBSOCKET EVENTS")
-    print("="*80)
+    print("=" * 80)
     print("This listener only receives events. It does NOT place orders.")
     print("To see order rejection events, place an order using:")
     print("  - simple_bot.py")
@@ -296,4 +294,3 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\n✓ Exited")
-

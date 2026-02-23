@@ -13,4 +13,3 @@ class GetPosition(BaseModel):
 
 class GetPositionsResponse(BaseModel):
     positions: PositionSetView | None = None
-

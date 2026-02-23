@@ -5,7 +5,6 @@ from rocket_sdk_python.types.ws.client_message import (
     Unsubscribe,
 )
 from rocket_sdk_python.types.ws.server_message import (
-    AccountRiskUpdate,
     AccountRiskView,
     AssetMarkPriceUpdate,
     CandleUpdate,
@@ -107,6 +106,7 @@ __all__ = [
     "PositionFundingSubscriptionFields",
     "PositionSubscription",
     "PositionSubscriptionFields",
+    "PositionFundingUpdate",
     "PositionUpdate",
     "PriceFeedSubscription",
     "PriceFeedSubscriptionFields",
@@ -119,4 +119,3 @@ __all__ = [
     "Unsubscribe",
     "UnsubscribeConfirmation",
 ]
-

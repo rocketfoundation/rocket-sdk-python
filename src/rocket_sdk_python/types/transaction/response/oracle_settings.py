@@ -34,4 +34,3 @@ class OracleState(BaseModel):
 
 
 OracleSettingsMap = dict[SourceId, OracleState]
-

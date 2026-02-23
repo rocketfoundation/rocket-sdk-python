@@ -8,4 +8,3 @@ GetAssets = PaginationData
 
 class GetAssetsResponse(BaseModel):
     assets: AssetSetView
-

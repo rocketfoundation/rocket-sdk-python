@@ -22,4 +22,3 @@ class GlobalFeesClientView(BaseModel):
     liquidity_provider_fee_ranking: LiquidityProviderFeeRankingClientView = Field(
         alias="liquidityProviderFeeRanking"
     )
-

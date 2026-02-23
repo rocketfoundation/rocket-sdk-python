@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 from rocket_sdk_python.types.primitives import AccountAddress
-from rocket_sdk_python.types.rest.pagination import PaginationData
 from rocket_sdk_python.types.views import OpenOrderView
 
 
@@ -19,4 +18,3 @@ class GetOpenOrdersResponse(BaseModel):
     orders: list[OpenOrderView] | None = None
     page_number: int | None = Field(default=None, alias="pageNumber")
     page_size: int | None = Field(default=None, alias="pageSize")
-

@@ -13,4 +13,3 @@ class FundingRateView(BaseModel):
 
 
 FundingRateByInstrumentClientView = RootModel[dict[InstrumentId, FundingRateView]]
-

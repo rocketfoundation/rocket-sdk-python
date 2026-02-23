@@ -24,4 +24,3 @@ class BridgeEventClientView(BaseModel):
 
 
 BridgeEventsSetClientView = RootModel[list[BridgeEventClientView]]
-

@@ -20,12 +20,12 @@ from example_utils import get_credentials
 
 
 def handle_message(msg: ServerMessage):
-    print(f"\n{'='*80}")
-    print(f"SERVER MESSAGE:")
-    print(f"{'='*80}")
+    print(f"\n{'=' * 80}")
+    print("SERVER MESSAGE:")
+    print(f"{'=' * 80}")
 
     if hasattr(msg, "OrderEventUpdate"):
-        print(f"📦 TYPE: OrderEventUpdate")
+        print("📦 TYPE: OrderEventUpdate")
         update = msg.OrderEventUpdate
         print(f"Account: {update.account}")
         print(f"Instrument ID: {update.instrument_id}")
@@ -39,7 +39,7 @@ def handle_message(msg: ServerMessage):
             print(f"    Instrument: {event.instrument}")
 
             if event.event_data.type == "Placed":
-                print(f"    ✓ EVENT: PLACED")
+                print("    ✓ EVENT: PLACED")
                 print(f"      Price: {event.event_data.price}")
                 print(f"      Size: {event.event_data.size}")
                 print(f"      Remaining Size: {event.event_data.remaining_size}")
@@ -49,7 +49,7 @@ def handle_message(msg: ServerMessage):
                 print(f"      Is Filled: {event.event_data.is_filled}")
 
             elif event.event_data.type == "Fill":
-                print(f"    ✓ EVENT: FILL")
+                print("    ✓ EVENT: FILL")
                 print(f"      Price: {event.event_data.price}")
                 print(f"      Size: {event.event_data.size}")
                 print(f"      Remaining Size: {event.event_data.remaining_size}")
@@ -63,19 +63,19 @@ def handle_message(msg: ServerMessage):
                 print(f"      Is Liquidation: {event.event_data.is_liquidation}")
 
             elif event.event_data.type == "Rejected":
-                print(f"    ✗ EVENT: REJECTED")
+                print("    ✗ EVENT: REJECTED")
                 print(f"      Reason: {event.event_data.reason}")
 
             elif event.event_data.type == "Cancelled":
-                print(f"    ⊘ EVENT: CANCELLED")
+                print("    ⊘ EVENT: CANCELLED")
 
             elif event.event_data.type == "Modified":
-                print(f"    ⚙ EVENT: MODIFIED")
+                print("    ⚙ EVENT: MODIFIED")
                 print(f"      Price: {event.event_data.price}")
                 print(f"      Size: {event.event_data.size}")
 
     elif hasattr(msg, "OpenOrdersUpdate"):
-        print(f"📋 TYPE: OpenOrdersUpdate")
+        print("📋 TYPE: OpenOrdersUpdate")
         update = msg.OpenOrdersUpdate
         print(f"Account: {update.account}")
         print(f"Number of orders: {len(update.orders)}")
@@ -89,36 +89,38 @@ def handle_message(msg: ServerMessage):
             print(f"    Instrument: {order.instrument}")
 
     elif hasattr(msg, "CollateralUpdate"):
-        print(f"💰 TYPE: CollateralUpdate")
+        print("💰 TYPE: CollateralUpdate")
         update = msg.CollateralUpdate
         print(f"Account: {update.account}")
         print(f"Asset ID: {update.asset_id}")
         print(f"Collateral: {update.collateral}")
 
     elif hasattr(msg, "PositionUpdate"):
-        print(f"📊 TYPE: PositionUpdate")
+        print("📊 TYPE: PositionUpdate")
         update = msg.PositionUpdate
         print(f"Account: {update.account}")
-        print(f"Positions: {json.dumps(update.positions.model_dump(by_alias=True), indent=2)}")
+        print(
+            f"Positions: {json.dumps(update.positions.model_dump(by_alias=True), indent=2)}"
+        )
 
     elif hasattr(msg, "SubscribeConfirmation"):
-        print(f"✓ TYPE: SubscribeConfirmation")
+        print("✓ TYPE: SubscribeConfirmation")
 
     elif hasattr(msg, "UnsubscribeConfirmation"):
-        print(f"✓ TYPE: UnsubscribeConfirmation")
+        print("✓ TYPE: UnsubscribeConfirmation")
 
     elif hasattr(msg, "Pong"):
-        print(f"🏓 TYPE: Pong")
+        print("🏓 TYPE: Pong")
 
     elif hasattr(msg, "Error"):
-        print(f"❌ TYPE: Error")
+        print("❌ TYPE: Error")
         print(f"Message: {msg.Error}")
 
     else:
         print(f"📨 TYPE: {type(msg).__name__}")
         print(f"Raw: {msg.model_dump_json(by_alias=True, indent=2)}")
 
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
 
 async def main():
@@ -158,7 +160,10 @@ async def main():
     )
 
     print("Subscribing to collateral updates for your account...")
-    from rocket_sdk_python.types.ws import CollateralSubscription, CollateralSubscriptionFields
+    from rocket_sdk_python.types.ws import (
+        CollateralSubscription,
+        CollateralSubscriptionFields,
+    )
 
     await client._send_queue.put(
         Subscribe(
@@ -190,27 +195,29 @@ async def main():
     bid_price = last_price * 0.85
     quantity = 1000
 
-    print(f"\n{'='*80}")
-    print(f"PLACING ORDER")
-    print(f"{'='*80}")
+    print(f"\n{'=' * 80}")
+    print("PLACING ORDER")
+    print(f"{'=' * 80}")
     print(f"Instrument: {instrument.ticker}")
-    print(f"Side: BUY")
+    print("Side: BUY")
     print(f"Last price: {last_price:.2f}")
     print(f"Bid price: {bid_price:.2f} (85% of last)")
     print(f"Quantity: {quantity / instrument.quantity_scale}")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
-    response = sdk.place_limit_order(
+    sdk.place_limit_order(
         instrument_id=instrument_id,
         side=OrderSide.BUY,
         price=str(int(bid_price * instrument.price_scale)),
         quantity=str(quantity),
     )
 
-    print(f"Transaction submitted. Waiting for WebSocket events...\n")
+    print("Transaction submitted. Waiting for WebSocket events...\n")
 
     print("Listening for 30 seconds...")
-    print("You should see OrderEventUpdate with either PLACED, FILLED, or REJECTED event\n")
+    print(
+        "You should see OrderEventUpdate with either PLACED, FILLED, or REJECTED event\n"
+    )
 
     await asyncio.sleep(30)
 
@@ -224,4 +231,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

@@ -53,4 +53,3 @@ class InstrumentRowData(BaseModel):
     is_trading: bool = Field(alias="isTrading")
     pnl_grid: PnLGrid = Field(alias="pnlGrid")
     initial_pnl_grid: PnLGrid = Field(alias="initialPnlGrid")
-

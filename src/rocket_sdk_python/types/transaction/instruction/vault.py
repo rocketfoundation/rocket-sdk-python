@@ -34,4 +34,3 @@ class VaultDepositInstruction(BaseModel):
 
 class VaultWithdrawInstruction(BaseModel):
     VaultWithdraw: VaultWithdrawData
-

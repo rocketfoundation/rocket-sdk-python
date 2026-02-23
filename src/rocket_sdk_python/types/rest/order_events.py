@@ -20,4 +20,3 @@ class GetOrderEventsResponse(BaseModel):
     )
     page_number: int | None = Field(default=None, alias="pageNumber")
     page_size: int | None = Field(default=None, alias="pageSize")
-

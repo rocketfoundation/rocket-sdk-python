@@ -35,4 +35,3 @@ class OpenOrderView(BaseModel):
     side: OrderSide
     timestamp: BlockTimestamp
     trigger_price: str | None = Field(default=None, alias="triggerPrice")
-

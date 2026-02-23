@@ -13,4 +13,3 @@ class GetAccountNonceResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     nonce: int
-

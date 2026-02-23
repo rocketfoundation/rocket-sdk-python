@@ -107,4 +107,3 @@ __all__ = [
     "VaultStatsView",
     "VaultView",
 ]
-
