@@ -2,11 +2,11 @@
 
 Python SDK for interacting with Rocket Chain, a high-performance blockchain trading platform.
 
-| Environment | Endpoint                               |
-| ----------- | -------------------------------------- |
-| Devnet      | `https://devnet.rocket-cluster-1.com`  |
-| Testnet     | `https://testnet.rocket-cluster-1.com` |
-| Beta        | `https://beta.rocket-cluster-1.com`    |
+| Environment | Rest Endpoint                        | Websocket Endpoint                 |
+| ----------- | ------------------------------------ | ---------------------------------- |
+| Devnet      | https://devnet.rocket-cluster-1.com  | wss://devnet.rocket-cluster-1.com  |
+| Testnet     | https://testnet.rocket-cluster-1.com | wss://testnet.rocket-cluster-1.com |
+| Beta        | https://beta.rocket-cluster-1.com    | wss://beta.rocket-cluster-1.com    |
 
 ## Requirements
 
