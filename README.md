@@ -2,6 +2,12 @@
 
 Python SDK for interacting with Rocket Chain, a high-performance blockchain trading platform.
 
+| Environment | Endpoint                               |
+| ----------- | -------------------------------------- |
+| Devnet      | `https://devnet.rocket-cluster-1.com`  |
+| Testnet     | `https://testnet.rocket-cluster-1.com` |
+| Beta        | `https://beta.rocket-cluster-1.com`    |
+
 ## Requirements
 
 - Python 3.12 or higher
@@ -135,6 +141,7 @@ sdk.place_limit_order(
 ### Signature Schemes
 
 The SDK supports two signature schemes:
+
 - EIP-191 (default) - Ethereum Signed Message format
 - EIP-712 - Typed data signing
 
