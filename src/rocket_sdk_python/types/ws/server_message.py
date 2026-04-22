@@ -41,12 +41,20 @@ class OrderbookView(BaseModel):
     asks: list[LevelView]
 
 
-class MarkPriceView(BaseModel):
+class PriceData(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     price: str
     iv: str | None = None
     timestamp: BlockTimestamp
+
+
+class MarkPriceView(BaseModel):
+    """Externally-tagged serde enum: ``{"Price": {"price": "...", "timestamp": ...}}``"""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    Price: PriceData
 
 
 class AccountRiskView(BaseModel):
