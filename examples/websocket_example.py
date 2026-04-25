@@ -12,6 +12,7 @@ from rocket_sdk_python.types.ws import (
     OpenOrdersSubscriptionFields,
     OrderEventsSubscription,
     OrderEventsSubscriptionFields,
+    OrderEventUpdateFields,
     ServerMessage,
     Subscribe,
 )
@@ -24,9 +25,9 @@ def handle_message(msg: ServerMessage):
     print("SERVER MESSAGE:")
     print(f"{'=' * 80}")
 
-    if hasattr(msg, "OrderEventUpdate"):
+    if hasattr(msg, "OrderEventUpdate") or isinstance(msg, OrderEventUpdateFields):
         print("📦 TYPE: OrderEventUpdate")
-        update = msg.OrderEventUpdate
+        update = msg if isinstance(msg, OrderEventUpdateFields) else msg.OrderEventUpdate
         print(f"Account: {update.account}")
         print(f"Instrument ID: {update.instrument_id}")
         print(f"Number of events: {len(update.order_events)}")

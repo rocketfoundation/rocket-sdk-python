@@ -305,6 +305,7 @@ ServerMessage = (
     | MarkPriceUpdate
     | AssetMarkPriceUpdate
     | OrderEventUpdate
+    | OrderEventUpdateFields
     | CollateralUpdate
     | PositionUpdate
     | AccountRiskUpdate
