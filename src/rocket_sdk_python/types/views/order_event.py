@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 from rocket_sdk_python.types.primitives import (
     AccountAddress,
@@ -16,56 +16,72 @@ class RejectionReason(str, Enum):
     MARGIN_VIOLATED = "marginViolated"
     NOT_ENOUGH_LIQUIDITY = "notEnoughLiquidity"
     TOO_MUCH_SLIPPAGE = "tooMuchSlippage"
+    SELF_TRADE_PREVENTION = "selfTradePrevention"
+
+
+class OrderEventFillFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    price: str
+    size: str
+    remaining_size: str
+    original_size: str
+    settlement_asset: AssetId
+    pnl: str | None = None
+    timestamp: BlockTimestamp
+    is_passive: bool
+    is_filled: bool
+    fee_rate: str
+    fee_amount: str
+    is_liquidation: bool
+    is_adl: bool
+
+
+class OrderEventPlacedFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    price: str
+    size: str
+    remaining_size: str
+    original_size: str
+    settlement_asset: AssetId
+    timestamp: BlockTimestamp
+    is_passive: bool
+    is_filled: bool
+
+
+class OrderEventModifiedFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    price: str
+    size: str
+    timestamp: BlockTimestamp
+
+
+class OrderEventRejectedFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    reason: RejectionReason
 
 
 class OrderEventFill(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
-    type: Literal["Fill"] = "Fill"
-    price: str
-    size: str
-    remaining_size: str = Field(alias="remainingSize")
-    original_size: str = Field(alias="originalSize")
-    settlement_asset: AssetId = Field(alias="settlementAsset")
-    pnl: str | None = None
-    timestamp: BlockTimestamp
-    is_passive: bool = Field(alias="isPassive")
-    is_filled: bool = Field(alias="isFilled")
-    fee_rate: str = Field(alias="feeRate")
-    fee_amount: str = Field(alias="feeAmount")
-    is_liquidation: bool = Field(alias="isLiquidation")
+    fill: OrderEventFillFields
 
 
 class OrderEventPlaced(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
-    type: Literal["Placed"] = "Placed"
-    price: str
-    size: str
-    remaining_size: str = Field(alias="remainingSize")
-    original_size: str = Field(alias="originalSize")
-    settlement_asset: AssetId = Field(alias="settlementAsset")
-    timestamp: BlockTimestamp
-    is_passive: bool = Field(alias="isPassive")
-    is_filled: bool = Field(alias="isFilled")
+    placed: OrderEventPlacedFields
 
 
-class OrderEventCanceled(BaseModel):
-    type: Literal["Canceled"] = "Canceled"
+class OrderEventCanceled(RootModel):
+    root: Literal["canceled"] = "canceled"
 
 
 class OrderEventModified(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
-    type: Literal["Modified"] = "Modified"
-    price: str
-    size: str
-    timestamp: BlockTimestamp
+    modified: OrderEventModifiedFields
 
 
 class OrderEventRejected(BaseModel):
-    type: Literal["Rejected"] = "Rejected"
-    reason: RejectionReason
+    rejected: OrderEventRejectedFields
 
 
 OrderEventDataClientView = (

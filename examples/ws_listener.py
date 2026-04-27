@@ -41,50 +41,55 @@ def handle_message(msg: ServerMessage):
         for i, event in enumerate(update.order_events, 1):
             print(f"\n  Event #{i}:")
             print(f"    Order ID: {event.order_id}")
-            print(f"    Order IX: {event.order_ix}")
             print(f"    Account: {event.account}")
             print(f"    Instrument: {event.instrument}")
 
-            if event.event_data.type == "Placed":
+            event_data = event.event_data
+
+            if hasattr(event_data, "placed"):
+                placed = event_data.placed
                 print("    ✓ EVENT: PLACED")
-                print(f"      Price: {event.event_data.price}")
-                print(f"      Size: {event.event_data.size}")
-                print(f"      Remaining Size: {event.event_data.remaining_size}")
-                print(f"      Original Size: {event.event_data.original_size}")
-                print(f"      Settlement Asset: {event.event_data.settlement_asset}")
-                print(f"      Is Passive: {event.event_data.is_passive}")
-                print(f"      Is Filled: {event.event_data.is_filled}")
+                print(f"      Price: {placed.price}")
+                print(f"      Size: {placed.size}")
+                print(f"      Remaining Size: {placed.remaining_size}")
+                print(f"      Original Size: {placed.original_size}")
+                print(f"      Settlement Asset: {placed.settlement_asset}")
+                print(f"      Is Passive: {placed.is_passive}")
+                print(f"      Is Filled: {placed.is_filled}")
 
-            elif event.event_data.type == "Fill":
+            elif hasattr(event_data, "fill"):
+                fill = event_data.fill
                 print("    ✓ EVENT: FILL")
-                print(f"      Price: {event.event_data.price}")
-                print(f"      Size: {event.event_data.size}")
-                print(f"      Remaining Size: {event.event_data.remaining_size}")
-                print(f"      Original Size: {event.event_data.original_size}")
-                print(f"      Settlement Asset: {event.event_data.settlement_asset}")
-                print(f"      Fee Rate: {event.event_data.fee_rate}")
-                print(f"      Fee Amount: {event.event_data.fee_amount}")
-                print(f"      PnL: {event.event_data.pnl}")
-                print(f"      Is Passive: {event.event_data.is_passive}")
-                print(f"      Is Filled: {event.event_data.is_filled}")
-                print(f"      Is Liquidation: {event.event_data.is_liquidation}")
+                print(f"      Price: {fill.price}")
+                print(f"      Size: {fill.size}")
+                print(f"      Remaining Size: {fill.remaining_size}")
+                print(f"      Original Size: {fill.original_size}")
+                print(f"      Settlement Asset: {fill.settlement_asset}")
+                print(f"      Fee Rate: {fill.fee_rate}")
+                print(f"      Fee Amount: {fill.fee_amount}")
+                print(f"      PnL: {fill.pnl}")
+                print(f"      Is Passive: {fill.is_passive}")
+                print(f"      Is Filled: {fill.is_filled}")
+                print(f"      Is Liquidation: {fill.is_liquidation}")
+                print(f"      Is ADL: {fill.is_adl}")
 
-            elif event.event_data.type == "Rejected":
+            elif hasattr(event_data, "rejected"):
                 print("    ✗✗✗ EVENT: REJECTED ✗✗✗")
-                print(f"      🚨 REJECTION REASON: {event.event_data.reason}")
+                print(f"      🚨 REJECTION REASON: {event_data.rejected.reason}")
                 print(f"      Order ID: {event.order_id}")
                 print(f"      Instrument: {event.instrument}")
 
-            elif event.event_data.type == "Cancelled":
-                print("    ⊘ EVENT: CANCELLED")
+            elif hasattr(event_data, "root") and event_data.root == "canceled":
+                print("    ⊘ EVENT: CANCELED")
 
-            elif event.event_data.type == "Modified":
+            elif hasattr(event_data, "modified"):
+                modified = event_data.modified
                 print("    ⚙ EVENT: MODIFIED")
-                print(f"      Price: {event.event_data.price}")
-                print(f"      Size: {event.event_data.size}")
+                print(f"      Price: {modified.price}")
+                print(f"      Size: {modified.size}")
 
             else:
-                print(f"    ⚠️  UNKNOWN EVENT TYPE: {event.event_data.type}")
+                print("    ⚠️  UNKNOWN EVENT TYPE")
                 print(
                     f"      Raw event data: {event.event_data.model_dump_json(by_alias=True, indent=6)}"
                 )
