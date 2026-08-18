@@ -6,8 +6,15 @@ from pydantic import BaseModel, ConfigDict, Field
 from rocket_sdk_python.types.primitives import AccountAddress, Signature
 from rocket_sdk_python.types.transaction.instruction import (
     CreateVaultInstruction,
+    DeferredInstruction,
+    DelegateManagerInstruction,
+    ModifyTWAPInstruction,
     PlaceOrderInstruction,
+    PlaceTWAPInstruction,
+    RemoveDelegateManagerInstruction,
+    RemoveWebclientDelegatesInstruction,
     SetLeverageInstruction,
+    SetMarketMakerProtectionInstruction,
     VaultDepositInstruction,
     VaultWithdrawInstruction,
     WithdrawInstruction,
@@ -31,6 +38,13 @@ TransactionInstruction = Union[
     VaultDepositInstruction,
     VaultWithdrawInstruction,
     SetLeverageInstruction,
+    DelegateManagerInstruction,
+    RemoveDelegateManagerInstruction,
+    RemoveWebclientDelegatesInstruction,
+    PlaceTWAPInstruction,
+    ModifyTWAPInstruction,
+    SetMarketMakerProtectionInstruction,
+    DeferredInstruction,
 ]
 
 

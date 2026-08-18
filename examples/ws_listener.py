@@ -142,7 +142,7 @@ def handle_message(msg: ServerMessage):
         print("📊 TYPE: InstrumentStatsUpdate")
         update = msg.InstrumentStatsUpdate
         print(f"Instrument ID: {update.instrument_id}")
-        print(f"Stats: {json.dumps(update.stats.model_dump(by_alias=True), indent=2)}")
+        print(f"Stats: {json.dumps(update.instrument_stats.model_dump(by_alias=True), indent=2)}")
 
     elif hasattr(msg, "SubscribeConfirmation"):
         print("✓ TYPE: SubscribeConfirmation")

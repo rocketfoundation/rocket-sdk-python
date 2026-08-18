@@ -163,6 +163,30 @@ class LastMatchPriceSubscription(BaseModel):
     LastMatchPrice: LastMatchPriceSubscriptionFields
 
 
+class AuctionFillsSubscriptionFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+
+
+class AuctionFillsSubscription(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    AuctionFills: AuctionFillsSubscriptionFields
+
+
+class TickerSubscriptionFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+
+
+class TickerSubscription(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    Ticker: TickerSubscriptionFields
+
+
 SubscriptionKind = (
     OrderbookSubscription
     | PriceFeedSubscription
@@ -177,4 +201,6 @@ SubscriptionKind = (
     | CandleSubscription
     | PositionFundingSubscription
     | LastMatchPriceSubscription
+    | AuctionFillsSubscription
+    | TickerSubscription
 )

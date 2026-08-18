@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
-from rocket_sdk_python.types.primitives import InstrumentId
+from rocket_sdk_python.types.primitives import BlockTimestamp, InstrumentId
 
 
 class InstrumentView(BaseModel):
@@ -25,6 +25,7 @@ class InstrumentView(BaseModel):
         default=None, alias="worstCasePriceMovePctMargin"
     )
     max_leverage_margin: str | None = Field(default=None, alias="maxLeverageMargin")
+    listed_at: BlockTimestamp | None = Field(default=None, alias="listedAt")
 
 
 InstrumentsSetView = RootModel[dict[InstrumentId, InstrumentView]]

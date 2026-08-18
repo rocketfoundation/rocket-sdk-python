@@ -14,6 +14,8 @@ AssetId = int
 
 GlobalOrderId = int
 
+MMPTag = int
+
 BlockTimestamp = int
 
 Shares = int

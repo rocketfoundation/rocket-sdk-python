@@ -8,6 +8,7 @@ from rocket_sdk_python.types.primitives.aliases import (
     HaircutTick,
     InstrumentFlags,
     InstrumentId,
+    MMPTag,
     OrderIx,
     PnLTick,
     PriceScale,
@@ -19,6 +20,10 @@ from rocket_sdk_python.types.primitives.aliases import (
     Shares,
     Signature,
     TradedVolume,
+)
+from rocket_sdk_python.types.primitives.mmp import (
+    DEFAULT_MMP_TAG,
+    MarketMakerProtectionConfig,
 )
 from rocket_sdk_python.types.primitives.asset import (
     AssetRow,
@@ -50,10 +55,13 @@ __all__ = [
     "FeeRate",
     "FUTURE_INSTRUMENT",
     "GlobalOrderId",
+    "DEFAULT_MMP_TAG",
     "HaircutTick",
     "InstrumentFlags",
     "InstrumentId",
     "InstrumentRow",
+    "MarketMakerProtectionConfig",
+    "MMPTag",
     "InstrumentRowData",
     "OrderIx",
     "OrderSide",

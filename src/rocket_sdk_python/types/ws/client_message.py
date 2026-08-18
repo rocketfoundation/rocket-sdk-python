@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 
+from rocket_sdk_python.types.transaction.sign import Transaction
 from rocket_sdk_python.types.ws.subscription_kind import SubscriptionKind
 
 
@@ -21,4 +22,29 @@ class Ping(BaseModel):
     Ping: None = None
 
 
-ClientMessage = Subscribe | Unsubscribe | Ping
+class SubmitTransaction(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    SubmitTransaction: Transaction
+
+
+class RegisterExecuteOnDisconnect(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    RegisterExecuteOnDisconnect: Transaction
+
+
+class ClearExecuteOnDisconnect(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    ClearExecuteOnDisconnect: None = None
+
+
+ClientMessage = (
+    Subscribe
+    | Unsubscribe
+    | Ping
+    | SubmitTransaction
+    | RegisterExecuteOnDisconnect
+    | ClearExecuteOnDisconnect
+)

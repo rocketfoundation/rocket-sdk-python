@@ -7,11 +7,15 @@ from rocket_sdk_python.types.transaction.sign import (
 
 
 def serialize_json(raw_tx: RawTransaction) -> bytes:
-    return raw_tx.model_dump_json(by_alias=True).encode("utf-8")
+    return raw_tx.model_dump_json(
+        by_alias=True, context={"human_readable": True}
+    ).encode("utf-8")
 
 
 def serialize_msgpack(raw_tx: RawTransaction) -> bytes:
-    data = raw_tx.model_dump(by_alias=True, mode="json")
+    data = raw_tx.model_dump(
+        by_alias=True, mode="json", context={"human_readable": False}
+    )
     return msgpack.packb(data, use_bin_type=True)
 
 

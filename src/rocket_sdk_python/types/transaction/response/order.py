@@ -36,6 +36,7 @@ class OrderEventFillFields(BaseModel):
     fee_amount: int = Field(alias="feeAmount")
     abs_position_size_change: QuantityTick = Field(alias="absPositionSizeChange")
     is_liquidation: bool = Field(alias="isLiquidation")
+    is_adl: bool = Field(default=False, alias="isAdl")
 
 
 class OrderEventPlacedFields(BaseModel):
@@ -76,7 +77,7 @@ class OrderEventPlacedData(BaseModel):
     placed: OrderEventPlacedFields
 
 
-class OrderEventCanceledData(RootModel):
+class OrderEventCanceledData(RootModel[Literal["canceled"]]):
     root: Literal["canceled"]
 
 
@@ -121,7 +122,14 @@ class PlaceOrderErr(BaseModel):
     message: str
 
 
+class PlaceOrderCancelAll(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    type: Literal["CancelAll"] = "CancelAll"
+    events: list[OrderEvent]
+
+
 PlaceOrderResult = Annotated[
-    PlaceOrderSuccess | PlaceOrderErr,
+    PlaceOrderSuccess | PlaceOrderErr | PlaceOrderCancelAll,
     Field(discriminator="type"),
 ]

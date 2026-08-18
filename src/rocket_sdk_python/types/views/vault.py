@@ -9,6 +9,7 @@ class VaultView(BaseModel):
     address: AccountAddress
     manager: AccountAddress
     asset: AssetId
+    is_main: bool = Field(default=False, alias="isMain")
     creation_timestamp: BlockTimestamp = Field(alias="creationTimestamp")
 
 

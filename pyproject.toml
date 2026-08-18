@@ -31,6 +31,7 @@ target-version = "py312"
 [tool.mypy]
 python_version = "3.12"
 strict = true
+plugins = ["pydantic.mypy"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/rocket_sdk_python"]

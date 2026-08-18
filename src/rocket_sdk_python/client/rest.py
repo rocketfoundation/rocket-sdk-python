@@ -23,31 +23,69 @@ from rocket_sdk_python.types.rest import (
     GetCandlesResponse,
     GetCollateral,
     GetCollateralsResponse,
+    GetDelegateTraders,
+    GetDelegateTradersResponse,
+    GetExpirations,
+    GetExpirationsResponse,
     GetFaucetClaim,
     GetFaucetClaimResponse,
     GetFundingRateEvents,
     GetFundingRateEventsResponse,
     GetGlobalFeesResponse,
+    GetInstrumentDetails,
+    GetInstrumentDetailsResponse,
+    GetInstruments,
     GetInstrumentsResponse,
+    GetLeaderboard,
+    GetLeaderboardResponse,
     GetMaxLeverage,
     GetMaxLeverageResponse,
     GetOpenOrders,
     GetOpenOrdersResponse,
     GetOrderEventsResponse,
+    GetOrderHistory,
+    GetOrderHistoryResponse,
+    GetPortfolio,
+    GetPortfolioResponse,
     GetPosition,
     GetPositionFundingEventsResponse,
     GetPositionsResponse,
+    GetTrades,
+    GetTradesResponse,
+    GetVaultDepositors,
+    GetVaultDepositorsResponse,
+    GetVaultEvents,
+    GetVaultEventsResponse,
     GetVaultHistory,
     GetVaultHistoryResponse,
+    GetVaultPortfolio,
+    GetVaultPortfolioResponse,
     GetVaultStats,
     GetVaultStatsResponse,
     GetVaults,
     GetVaultsResponse,
+    LeaderboardMetric,
 )
 from rocket_sdk_python.types.transaction.response import TransactionResponse
 from rocket_sdk_python.types.transaction.sign import Transaction
 
 _tx_response_adapter = TypeAdapter(TransactionResponse)
+
+_INSTRUCTION_RESPONSE_TYPES = {
+    "PlaceOrder": "PlaceOrder",
+    "PlaceTWAP": "PlaceOrder",
+    "ModifyTWAP": "PlaceOrder",
+    "Deferred": "PlaceOrder",
+    "Withdraw": "Ok",
+    "CreateVault": "CreateVault",
+    "VaultDeposit": "VaultDeposit",
+    "VaultWithdraw": "VaultWithdraw",
+    "SetLeverage": "Ok",
+    "DelegateManager": "DelegateManager",
+    "RemoveDelegateManager": "RemoveDelegateManager",
+    "RemoveWebclientDelegates": "RemoveWebclientDelegates",
+    "SetMarketMakerProtection": "Ok",
+}
 
 
 class RestClient:
@@ -81,32 +119,35 @@ class RestClient:
         Only transforms single-key dicts where the key looks like a variant name (capitalized).
         """
         if isinstance(obj, dict):
-            # Check if this is a single-key dict with a capitalized key (Rust enum variant)
             if len(obj) == 1:
                 key = next(iter(obj.keys()))
-                # Only transform if the key starts with uppercase (variant name pattern)
-                # and is not a known field name like 'results', 'instruments', etc.
                 if key[0].isupper() and key not in [
                     "PlaceOrder",
+                    "PlaceTWAP",
+                    "ModifyTWAP",
+                    "Deferred",
                     "CreateVault",
                     "VaultDeposit",
                     "VaultWithdraw",
                     "SetLeverage",
                     "Withdraw",
+                    "DelegateManager",
+                    "RemoveDelegateManager",
+                    "RemoveWebclientDelegates",
+                    "SetMarketMakerProtection",
                 ]:
                     value = obj[key]
                     transformed_value = self._transform_rust_enum(value, parent_key=key)
 
-                    # Special case: Success/Err variants should have their content under 'event'/'message'
                     if key == "Success":
                         return {"type": key, "event": transformed_value}
                     elif key == "Err":
-                        # Err might have a message field or be a simple string
                         if isinstance(transformed_value, dict):
                             return {"type": key, **transformed_value}
                         else:
                             return {"type": key, "message": transformed_value}
-                    # For event data variants (placed, canceled, etc.), merge the fields
+                    elif key == "CancelAll":
+                        return {"type": key, "events": transformed_value}
                     elif key.lower() in [
                         "placed",
                         "canceled",
@@ -121,13 +162,11 @@ class RestClient:
                                 "type": key.capitalize(),
                                 "value": transformed_value,
                             }
-                    # Default: merge fields
                     elif isinstance(transformed_value, dict):
                         return {"type": key, **transformed_value}
                     else:
                         return {"type": key, "value": transformed_value}
 
-            # Recursively transform nested objects
             return {
                 k: self._transform_rust_enum(v, parent_key=k) for k, v in obj.items()
             }
@@ -139,42 +178,35 @@ class RestClient:
             return obj
 
     def submit_transaction(self, tx: Transaction) -> TransactionResponse:
-        body = tx.model_dump(by_alias=True, mode="json")
+        body = tx.model_dump(
+            by_alias=True, mode="json", context={"human_readable": True}
+        )
         data = self._post("/transaction", body)
 
-        # Transform Rust-style enum serialization
         data = self._transform_rust_enum(data)
 
-        # API doesn't return a 'type' field at the top level, infer it from the instruction
         instruction = tx.data.instruction
-        if hasattr(instruction, "PlaceOrder"):
-            data["type"] = "PlaceOrder"
-        elif hasattr(instruction, "Withdraw"):
-            data["type"] = "Ok"  # Withdraw returns Ok response
-        elif hasattr(instruction, "CreateVault"):
-            data["type"] = "CreateVault"
-        elif hasattr(instruction, "VaultDeposit"):
-            data["type"] = "VaultDeposit"
-        elif hasattr(instruction, "VaultWithdraw"):
-            data["type"] = "VaultWithdraw"
-        elif hasattr(instruction, "SetLeverage"):
-            data["type"] = "Ok"  # SetLeverage returns Ok response
-        else:
-            # Default to Ok if we can't determine the type
-            data["type"] = "Ok"
+        instruction_name = next(iter(instruction.model_dump().keys()), None)
+        data["type"] = _INSTRUCTION_RESPONSE_TYPES.get(instruction_name, "Ok")
 
         return _tx_response_adapter.validate_python(data)
 
     def submit_transactions_batch(self, txs: list[Transaction]) -> str:
-        body = [tx.model_dump(by_alias=True, mode="json") for tx in txs]
+        body = [
+            tx.model_dump(by_alias=True, mode="json", context={"human_readable": True})
+            for tx in txs
+        ]
         return self._post("/batch_transactions", body)
 
     def get_account_nonce(self, account: AccountAddress) -> int:
+        return self.get_account_nonces(account).nonce
+
+    def get_account_nonces(self, account: AccountAddress) -> GetAccountNonceResponse:
         params = GetAccountNonce(account=account).model_dump(
             by_alias=True, exclude_none=True
         )
         data = self._get("/account-nonce", params)
-        return GetAccountNonceResponse.model_validate(data).nonce
+        return GetAccountNonceResponse.model_validate(data)
 
     def get_account_fees(self, account: AccountAddress) -> GetAccountFeesResponse:
         params = GetAccountFees(account=account).model_dump(
@@ -184,15 +216,47 @@ class RestClient:
         return GetAccountFeesResponse.model_validate(data)
 
     def get_instruments(
-        self, page_number: int | None = None, page_size: int | None = None
+        self,
+        page_number: int | None = None,
+        page_size: int | None = None,
+        contract_type: str | None = None,
+        expiry: str | None = None,
+        underlying_asset: str | None = None,
     ) -> GetInstrumentsResponse:
-        params: dict = {}
-        if page_number is not None:
-            params["pageNumber"] = page_number
-        if page_size is not None:
-            params["pageSize"] = page_size
+        params = GetInstruments(
+            page_number=page_number,
+            page_size=page_size,
+            contract_type=contract_type,
+            expiry=expiry,
+            underlying_asset=underlying_asset,
+        ).model_dump(by_alias=True, exclude_none=True)
         data = self._get("/instruments", params or None)
         return GetInstrumentsResponse.model_validate(data)
+
+    def get_instrument_details(
+        self,
+        instrument_id: InstrumentId | None = None,
+        contract_type: str | None = None,
+        expiry: str | None = None,
+        underlying_asset: str | None = None,
+    ) -> GetInstrumentDetailsResponse:
+        params = GetInstrumentDetails(
+            instrument_id=instrument_id,
+            contract_type=contract_type,
+            expiry=expiry,
+            underlying_asset=underlying_asset,
+        ).model_dump(by_alias=True, exclude_none=True)
+        data = self._get("/instrument-details", params or None)
+        return GetInstrumentDetailsResponse.model_validate(data)
+
+    def get_expirations(
+        self, contract_type: str, underlying_asset: str
+    ) -> GetExpirationsResponse:
+        params = GetExpirations(
+            contract_type=contract_type, underlying_asset=underlying_asset
+        ).model_dump(by_alias=True)
+        data = self._get("/expirations", params)
+        return GetExpirationsResponse.model_validate(data)
 
     def get_assets(
         self, page_number: int | None = None, page_size: int | None = None
@@ -298,6 +362,79 @@ class RestClient:
         data = self._get("/order-events", params)
         return GetOrderEventsResponse.model_validate(data)
 
+    def get_order_history(
+        self,
+        account: AccountAddress,
+        start_time: BlockTimestamp | None = None,
+        end_time: BlockTimestamp | None = None,
+        limit: int | None = None,
+    ) -> GetOrderHistoryResponse:
+        params = GetOrderHistory(
+            account=account, start_time=start_time, end_time=end_time, limit=limit
+        ).model_dump(by_alias=True, exclude_none=True)
+        data = self._get("/order-history", params)
+        return GetOrderHistoryResponse.model_validate(data)
+
+    def get_trades(
+        self,
+        account: AccountAddress | None = None,
+        instrument: InstrumentId | None = None,
+        start_time: BlockTimestamp | None = None,
+        end_time: BlockTimestamp | None = None,
+        limit: int | None = None,
+        count: int | None = None,
+        cursor: str | None = None,
+    ) -> GetTradesResponse:
+        params = GetTrades(
+            account=account,
+            instrument=instrument,
+            start_time=start_time,
+            end_time=end_time,
+            limit=limit,
+            count=count,
+            cursor=cursor,
+        ).model_dump(by_alias=True, exclude_none=True)
+        data = self._get("/trades", params or None)
+        return GetTradesResponse.model_validate(data)
+
+    def get_portfolio(
+        self,
+        account: AccountAddress,
+        from_: BlockTimestamp,
+        to: BlockTimestamp,
+        interval: CandleTimeframe,
+    ) -> GetPortfolioResponse:
+        params = GetPortfolio(
+            account=account, from_=from_, to=to, interval=interval
+        ).model_dump(by_alias=True)
+        data = self._get("/portfolio", params)
+        return GetPortfolioResponse.model_validate(data)
+
+    def get_leaderboard(
+        self,
+        start_time: BlockTimestamp | None = None,
+        end_time: BlockTimestamp | None = None,
+        count: int | None = None,
+        metric: LeaderboardMetric | None = None,
+        account: AccountAddress | None = None,
+    ) -> GetLeaderboardResponse:
+        params = GetLeaderboard(
+            start_time=start_time,
+            end_time=end_time,
+            count=count,
+            metric=metric,
+            account=account,
+        ).model_dump(by_alias=True, exclude_none=True)
+        data = self._get("/leaderboard", params or None)
+        return GetLeaderboardResponse.model_validate(data)
+
+    def get_delegate_traders(
+        self, account: AccountAddress
+    ) -> GetDelegateTradersResponse:
+        params = GetDelegateTraders(account=account).model_dump(by_alias=True)
+        data = self._get("/delegate-traders", params)
+        return GetDelegateTradersResponse.model_validate(data)
+
     def get_vaults(
         self, page_number: int | None = None, page_size: int | None = None
     ) -> GetVaultsResponse:
@@ -306,6 +443,11 @@ class RestClient:
         )
         data = self._get("/vaults", params or None)
         return GetVaultsResponse.model_validate(data)
+
+    def get_vault_depositors(self, vault: AccountAddress) -> GetVaultDepositorsResponse:
+        params = GetVaultDepositors(vault=vault).model_dump(by_alias=True)
+        data = self._get("/vault-depositors", params)
+        return GetVaultDepositorsResponse.model_validate(data)
 
     def get_vault_stats(
         self,
@@ -321,16 +463,47 @@ class RestClient:
 
     def get_vault_history(
         self,
-        vault: AccountAddress,
-        user: AccountAddress | None = None,
-        page_number: int | None = None,
-        page_size: int | None = None,
+        address: AccountAddress,
+        from_: BlockTimestamp,
+        to: BlockTimestamp,
+        interval: CandleTimeframe,
     ) -> GetVaultHistoryResponse:
         params = GetVaultHistory(
-            vault=vault, user=user, page_number=page_number, page_size=page_size
-        ).model_dump(by_alias=True, exclude_none=True)
+            address=address, from_=from_, to=to, interval=interval
+        ).model_dump(by_alias=True)
         data = self._get("/vault-history", params)
         return GetVaultHistoryResponse.model_validate(data)
+
+    def get_vault_events(
+        self,
+        vault: AccountAddress | None = None,
+        account: AccountAddress | None = None,
+        round_from: str | None = None,
+        round_to: str | None = None,
+        page_number: int | None = None,
+        page_size: int | None = None,
+    ) -> GetVaultEventsResponse:
+        params = GetVaultEvents(
+            vault=vault,
+            account=account,
+            round_from=round_from,
+            round_to=round_to,
+            page_number=page_number,
+            page_size=page_size,
+        ).model_dump(by_alias=True, exclude_none=True)
+        data = self._get("/vault-events", params or None)
+        return GetVaultEventsResponse.model_validate(data)
+
+    def get_vault_portfolio(
+        self,
+        account: AccountAddress,
+        vault: AccountAddress | None = None,
+    ) -> GetVaultPortfolioResponse:
+        params = GetVaultPortfolio(account=account, vault=vault).model_dump(
+            by_alias=True, exclude_none=True
+        )
+        data = self._get("/vault-portfolio", params)
+        return GetVaultPortfolioResponse.model_validate(data)
 
     def get_bridge_events(
         self,

@@ -17,6 +17,7 @@ class RejectionReason(str, Enum):
     NOT_ENOUGH_LIQUIDITY = "notEnoughLiquidity"
     TOO_MUCH_SLIPPAGE = "tooMuchSlippage"
     SELF_TRADE_PREVENTION = "selfTradePrevention"
+    MARKET_MAKER_PROTECTION = "marketMakerProtection"
 
 
 class OrderEventFillFields(BaseModel):
@@ -34,7 +35,7 @@ class OrderEventFillFields(BaseModel):
     fee_rate: str
     fee_amount: str
     is_liquidation: bool
-    is_adl: bool
+    is_adl: bool = False
 
 
 class OrderEventPlacedFields(BaseModel):
@@ -72,7 +73,7 @@ class OrderEventPlaced(BaseModel):
     placed: OrderEventPlacedFields
 
 
-class OrderEventCanceled(RootModel):
+class OrderEventCanceled(RootModel[Literal["canceled"]]):
     root: Literal["canceled"] = "canceled"
 
 

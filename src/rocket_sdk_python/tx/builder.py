@@ -1,11 +1,25 @@
-from rocket_sdk_python.types.primitives import AccountAddress, AssetId, InstrumentId
+from rocket_sdk_python.types.primitives import (
+    AccountAddress,
+    AssetId,
+    InstrumentId,
+    MMPTag,
+    MarketMakerProtectionConfig,
+)
 from rocket_sdk_python.types.transaction.instruction import (
     CreateVaultData,
     CreateVaultInstruction,
+    DeferredData,
+    DeferredInstruction,
+    ModifyTWAPInstruction,
+    ModifyTWAPRequest,
     OrderRequestSet,
     PlaceOrderInstruction,
+    PlaceTWAPInstruction,
+    PlaceTWAPRequest,
     SetLeverageData,
     SetLeverageInstruction,
+    SetMarketMakerProtectionData,
+    SetMarketMakerProtectionInstruction,
     VaultDepositData,
     VaultDepositInstruction,
     VaultWithdrawData,
@@ -24,6 +38,63 @@ def place_order(
     return RawTransaction(
         sender=sender,
         instruction=PlaceOrderInstruction(PlaceOrder=orders),
+        nonce=nonce,
+    )
+
+
+def place_twap(
+    sender: AccountAddress,
+    request: PlaceTWAPRequest,
+    nonce: int,
+) -> RawTransaction:
+    return RawTransaction(
+        sender=sender,
+        instruction=PlaceTWAPInstruction(PlaceTWAP=request),
+        nonce=nonce,
+    )
+
+
+def modify_twap(
+    sender: AccountAddress,
+    request: ModifyTWAPRequest,
+    nonce: int,
+) -> RawTransaction:
+    return RawTransaction(
+        sender=sender,
+        instruction=ModifyTWAPInstruction(ModifyTWAP=request),
+        nonce=nonce,
+    )
+
+
+def deferred_orders(
+    sender: AccountAddress,
+    orders: OrderRequestSet,
+    expires_at_ms: int,
+    deferred_nonce: int,
+) -> RawTransaction:
+    return RawTransaction(
+        sender=sender,
+        instruction=DeferredInstruction(
+            Deferred=DeferredData(expires_at_ms=expires_at_ms, orders=orders),
+        ),
+        nonce=deferred_nonce,
+    )
+
+
+def set_market_maker_protection(
+    sender: AccountAddress,
+    to: AccountAddress,
+    mmp_tag: MMPTag,
+    config: MarketMakerProtectionConfig,
+    nonce: int,
+) -> RawTransaction:
+    return RawTransaction(
+        sender=sender,
+        instruction=SetMarketMakerProtectionInstruction(
+            SetMarketMakerProtection=SetMarketMakerProtectionData(
+                to=to, mmp_tag=mmp_tag, config=config
+            ),
+        ),
         nonce=nonce,
     )
 

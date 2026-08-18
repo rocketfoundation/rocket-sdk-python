@@ -3,12 +3,14 @@ from rocket_sdk_python.types.views.account_fees import (
     LiquidityProviderRank,
 )
 from rocket_sdk_python.types.views.assets import AssetSetView, AssetView
+from rocket_sdk_python.types.views.auction_fill import AuctionFillEntry, AuctionFillView
 from rocket_sdk_python.types.views.bridge_event import (
     BridgeEventClientView,
     BridgeEventsSetClientView,
     BridgeEventType,
 )
 from rocket_sdk_python.types.views.collateral import CollateralView
+from rocket_sdk_python.types.views.delegate_traders import DelegateTraderView
 from rocket_sdk_python.types.views.funding_rate import (
     FundingRateByInstrumentClientView,
     FundingRateView,
@@ -25,6 +27,7 @@ from rocket_sdk_python.types.views.instrument_stats import (
     InstrumentStatsMapView,
     InstrumentStatsView,
 )
+from rocket_sdk_python.types.views.instrument_type import AggregatedInstrumentType
 from rocket_sdk_python.types.views.open_order import (
     OpenOrderView,
     OrderType,
@@ -40,12 +43,22 @@ from rocket_sdk_python.types.views.order_event import (
     OrderEventRejected,
     RejectionReason,
 )
+from rocket_sdk_python.types.views.portfolio import (
+    PortfolioCurvePoint,
+    PortfolioSummary,
+    VaultHistoryStats,
+)
 from rocket_sdk_python.types.views.position import PositionSetView, PositionView
 from rocket_sdk_python.types.views.position_funding_events import (
     PositionFundingEventsClientViewSet,
     PositionFundingEventView,
 )
+from rocket_sdk_python.types.views.quote import QuoteView, TickerView
 from rocket_sdk_python.types.views.vault import VaultSetView, VaultView
+from rocket_sdk_python.types.views.vault_depositors import (
+    VaultDepositorView,
+    VaultDepositorsView,
+)
 from rocket_sdk_python.types.views.vault_history import (
     VaultHistoryClientView,
     VaultHistoryEntryClientView,
@@ -62,12 +75,16 @@ from rocket_sdk_python.types.views.vault_stats import (
 
 __all__ = [
     "AccountFeesClientView",
+    "AggregatedInstrumentType",
     "AssetSetView",
     "AssetView",
+    "AuctionFillEntry",
+    "AuctionFillView",
     "BridgeEventClientView",
     "BridgeEventsSetClientView",
     "BridgeEventType",
     "CollateralView",
+    "DelegateTraderView",
     "FeeLadderClientView",
     "FeeRatesClientView",
     "FundingRateByInstrumentClientView",
@@ -89,15 +106,22 @@ __all__ = [
     "OrderEventPlaced",
     "OrderEventRejected",
     "OrderType",
+    "PortfolioCurvePoint",
+    "PortfolioSummary",
     "PositionFundingEventsClientViewSet",
     "PositionFundingEventView",
     "PositionSetView",
     "PositionView",
+    "QuoteView",
     "RejectionReason",
+    "TickerView",
     "TriggerType",
+    "VaultDepositorView",
+    "VaultDepositorsView",
     "VaultHistoryClientView",
     "VaultHistoryEntryClientView",
     "VaultHistoryEventType",
+    "VaultHistoryStats",
     "VaultSetView",
     "VaultShareBalanceView",
     "VaultStatsForRangeView",

@@ -19,6 +19,7 @@ from rocket_sdk_python.types.transaction.response.order import (
     OrderEventModifiedData,
     OrderEventPlacedData,
     OrderEventRejectedData,
+    PlaceOrderCancelAll,
     PlaceOrderErr,
     PlaceOrderResult,
     PlaceOrderSuccess,
@@ -63,6 +64,21 @@ class DelegateManagerTransactionResponse(BaseModel):
     type: Literal["DelegateManager"] = "DelegateManager"
     delegator: AccountAddress
     manager: AccountAddress
+
+
+class RemoveDelegateManagerTransactionResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    type: Literal["RemoveDelegateManager"] = "RemoveDelegateManager"
+    delegator: AccountAddress
+    manager: AccountAddress
+
+
+class RemoveWebclientDelegatesTransactionResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    type: Literal["RemoveWebclientDelegates"] = "RemoveWebclientDelegates"
+    removed_count: int = Field(alias="removedCount")
 
 
 class UpdateOracleConfigResponse(BaseModel):
@@ -110,6 +126,8 @@ TransactionResponse = Annotated[
     | VaultDepositTransactionResponse
     | VaultWithdrawTransactionResponse
     | DelegateManagerTransactionResponse
+    | RemoveDelegateManagerTransactionResponse
+    | RemoveWebclientDelegatesTransactionResponse
     | UpdateOracleConfigResponse
     | ListAssetsResponse
     | ListInstrumentsResponse
@@ -122,10 +140,13 @@ TransactionResponse = Annotated[
 __all__ = [
     "CreateVaultTransactionResponse",
     "DelegateManagerTransactionResponse",
+    "RemoveDelegateManagerTransactionResponse",
+    "RemoveWebclientDelegatesTransactionResponse",
     "ErrResponse",
     "ListAssetsResponse",
     "ListInstrumentsResponse",
     "OkResponse",
+    "PlaceOrderCancelAll",
     "OraclePriceScale",
     "OracleSettingsMap",
     "OracleState",

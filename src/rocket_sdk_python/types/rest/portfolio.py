@@ -4,24 +4,22 @@ from rocket_sdk_python.types.primitives import AccountAddress, BlockTimestamp
 from rocket_sdk_python.types.rest.candles import CandleTimeframe
 from rocket_sdk_python.types.views.portfolio import (
     PortfolioCurvePoint,
-    VaultHistoryStats,
+    PortfolioSummary,
 )
 
 
-class GetVaultHistory(BaseModel):
+class GetPortfolio(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    address: AccountAddress
+    account: AccountAddress
     from_: BlockTimestamp = Field(alias="from")
     to: BlockTimestamp
     interval: CandleTimeframe
 
 
-class GetVaultHistoryResponse(BaseModel):
+class GetPortfolioResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
-    returns: list[PortfolioCurvePoint]
-    nav: list[PortfolioCurvePoint]
-    tvl: list[PortfolioCurvePoint]
-    apr: str
-    vault_stats: VaultHistoryStats = Field(alias="vaultStats")
+    equity: list[PortfolioCurvePoint]
+    pnl: list[PortfolioCurvePoint]
+    summary: PortfolioSummary

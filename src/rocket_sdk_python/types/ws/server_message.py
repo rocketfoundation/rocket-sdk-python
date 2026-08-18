@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from rocket_sdk_python.types.primitives import (
     AccountAddress,
@@ -6,25 +6,20 @@ from rocket_sdk_python.types.primitives import (
     BlockTimestamp,
     InstrumentId,
     Round,
+    Signature,
 )
 from rocket_sdk_python.types.rest.candles import CandleTimeframe
+from rocket_sdk_python.types.transaction.response import TransactionResponse
 from rocket_sdk_python.types.views import (
+    AuctionFillEntry,
     InstrumentStatsView,
     OpenOrderView,
     OrderEventClientView,
     PositionSetView,
+    QuoteView,
+    TickerView,
 )
 from rocket_sdk_python.types.ws.subscription_kind import SubscriptionKind
-
-
-class QuoteView(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-
-    timestamp: int
-    bid_price: str = Field(alias="bidPrice")
-    bid_size: str = Field(alias="bidSize")
-    ask_price: str = Field(alias="askPrice")
-    ask_size: str = Field(alias="askSize")
 
 
 class LevelView(BaseModel):
@@ -224,7 +219,14 @@ class InstrumentStatsUpdateFields(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     instrument_id: InstrumentId = Field(alias="instrumentId")
-    stats: InstrumentStatsView
+    instrument_stats: InstrumentStatsView = Field(
+        validation_alias=AliasChoices("instrumentStats", "stats"),
+        serialization_alias="instrumentStats",
+    )
+
+    @property
+    def stats(self) -> InstrumentStatsView:
+        return self.instrument_stats
 
 
 class InstrumentStatsUpdate(BaseModel):
@@ -275,6 +277,65 @@ class LastMatchPriceUpdate(BaseModel):
     LastMatchPriceUpdate: LastMatchPriceUpdateFields
 
 
+class AuctionFillUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+    price: str
+    fills: list[AuctionFillEntry]
+
+
+class AuctionFillUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    AuctionFillUpdate: AuctionFillUpdateFields
+
+
+class TickerUpdateFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    instrument_id: InstrumentId = Field(alias="instrumentId")
+    ticker: TickerView
+
+
+class TickerUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    TickerUpdate: TickerUpdateFields
+
+
+class TransactionResultFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    signature: Signature
+    response: TransactionResponse
+
+
+class TransactionResult(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    TransactionResult: TransactionResultFields
+
+
+class ExecuteOnDisconnectRegisteredFields(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    signature: Signature
+    deferred_nonce: int = Field(alias="deferredNonce")
+
+
+class ExecuteOnDisconnectRegistered(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    ExecuteOnDisconnectRegistered: ExecuteOnDisconnectRegisteredFields
+
+
+class ExecuteOnDisconnectCleared(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    ExecuteOnDisconnectCleared: None = None
+
+
 class SubscribeConfirmation(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -315,6 +376,11 @@ ServerMessage = (
     | CandleUpdate
     | PositionFundingUpdate
     | LastMatchPriceUpdate
+    | AuctionFillUpdate
+    | TickerUpdate
+    | TransactionResult
+    | ExecuteOnDisconnectRegistered
+    | ExecuteOnDisconnectCleared
     | SubscribeConfirmation
     | UnsubscribeConfirmation
     | Pong
